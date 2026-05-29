@@ -1,0 +1,193 @@
+---
+/**
+ * ArticleLayout — blog post / buying guide / installation guide (spec B5).
+ * Clear headings, MDX body, FAQ-friendly, and a soft CTA to related products.
+ * Emits Article JSON-LD. Routed under the right /resources/ prefix by `type`.
+ */
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import JsonLd from '@components/seo/JsonLd.astro';
+import { articleSchema } from '@lib/schema';
+import { productHref } from '@lib/catalog';
+import { formatDate, isoDate } from '@lib/format';
+
+interface Props {
+  entry: CollectionEntry<'blog'>;
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+const SECTIONS = {
+  article: { base: '/resources/blog/', name: 'Blog' },
+  'buying-guide': { base: '/resources/buying-guides/', name: 'Buying guides' },
+  'installation-guide': { base: '/resources/installation-guides/', name: 'Installation guides' },
+} as const;
+const section = SECTIONS[d.type];
+const url = `${section.base}${entry.id}/`;
+
+// Soft CTA: resolve related products to links.
+const products = await getCollection('products');
+const related = (d.relatedProducts ?? [])
+  .map((slug) => products.find((p) => p.id === slug))
+  .filter((p): p is CollectionEntry<'products'> => Boolean(p))
+  .map((p) => ({ title: p.data.title, href: productHref(p.data.category, p.id) }));
+
+const noindex = d.draft || d.noindex;
+---
+
+<BaseLayout
+  title={d.title}
+  metaTitle={d.metaTitle}
+  description={d.metaDescription}
+  ogImage={d.ogImage ?? d.heroImage}
+  ogType="article"
+  noindex={noindex}
+  crumbs={[
+    { name: 'Resources', href: '/resources/' },
+    { name: section.name, href: section.base },
+    { name: d.title, href: url },
+  ]}
+>
+  <article class="article">
+    <header class="article-head container-page">
+      <p class="eyebrow">{section.name}</p>
+      <h1>{d.title}</h1>
+      <p class="article-meta">
+        By {d.author} · <time datetime={isoDate(d.publishDate)}>{formatDate(d.publishDate)}</time>
+        {d.updatedDate && <> · Updated <time datetime={isoDate(d.updatedDate)}>{formatDate(d.updatedDate)}</time></>}
+      </p>
+      {
+        d.draft && (
+          <p class="draft-banner">🚧 Draft / sample content — not indexed until finalised.</p>
+        )
+      }
+      {
+        d.heroImage && (
+          <img class="article-hero" src={d.heroImage} alt={d.title} width="1200" height="600" />
+        )
+      }
+    </header>
+
+    <Section>
+      <div class="prose">
+        <Content />
+      </div>
+
+      {
+        related.length > 0 && (
+          <aside class="soft-cta">
+            <h2>Related products</h2>
+            <ul>
+              {related.map((r) => (
+                <li>
+                  <a href={r.href}>{r.title} →</a>
+                </li>
+              ))}
+            </ul>
+            <a href="/contact/" class="btn btn-primary">Request a quote</a>
+          </aside>
+        )
+      }
+    </Section>
+  </article>
+
+  <JsonLd
+    schema={articleSchema({
+      headline: d.title,
+      description: d.metaDescription,
+      image: d.heroImage,
+      datePublished: isoDate(d.publishDate),
+      dateModified: d.updatedDate ? isoDate(d.updatedDate) : isoDate(d.publishDate),
+      author: d.author,
+      url,
+    })}
+  />
+</BaseLayout>
+
+<style>
+  .article-head {
+    padding-top: 2.5rem;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-accent);
+    margin: 0 0 0.5rem;
+  }
+  .article-head h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0 0 0.5rem;
+    max-width: 22ch;
+  }
+  .article-meta {
+    color: var(--color-steel);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+  .draft-banner {
+    margin: 1rem 0 0;
+    padding: 0.65rem 1rem;
+    background: #fff8e1;
+    border: 1px dashed #d4a017;
+    border-radius: var(--radius-card);
+    font-size: 0.88rem;
+    color: #7a5c00;
+  }
+  .article-hero {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-card);
+    margin-top: 1.5rem;
+  }
+  .prose {
+    max-width: 70ch;
+  }
+  .prose :global(p) {
+    line-height: 1.8;
+    margin: 0 0 1.1rem;
+  }
+  .prose :global(h2) {
+    font-size: 1.5rem;
+    margin: 2rem 0 0.75rem;
+  }
+  .prose :global(h3) {
+    font-size: 1.2rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    line-height: 1.8;
+    margin: 0 0 1.1rem;
+    padding-left: 1.25rem;
+  }
+  .prose :global(a) {
+    color: var(--color-accent);
+  }
+  .soft-cta {
+    margin-top: 2.5rem;
+    padding: 1.5rem;
+    background: var(--color-surface);
+    border-radius: var(--radius-card);
+    max-width: 70ch;
+  }
+  .soft-cta h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.2rem;
+  }
+  .soft-cta ul {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+  .soft-cta a {
+    font-weight: 500;
+  }
+</style>

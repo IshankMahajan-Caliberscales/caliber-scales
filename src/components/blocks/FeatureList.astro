@@ -1,0 +1,71 @@
+---
+/**
+ * FeatureList — "Why Caliber" style grid of titled points (spec B5).
+ * Defaults to WHY_CALIBER; pass `items` to reuse elsewhere.
+ */
+import { WHY_CALIBER, type Feature } from '@lib/catalog';
+
+interface Props {
+  items?: Feature[];
+}
+
+const { items = WHY_CALIBER } = Astro.props;
+---
+
+<ul class="feature-list">
+  {
+    items.map((f) => (
+      <li class="feature">
+        <span class="feature-check" aria-hidden="true">✓</span>
+        <div>
+          <h3 class="feature-title">{f.title}</h3>
+          <p class="feature-detail">{f.detail}</p>
+        </div>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .feature-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .feature {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+  }
+  .feature-check {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(29, 158, 117, 0.12);
+    color: var(--color-success);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .feature-title {
+    font-size: 1.05rem;
+    margin: 0 0 0.25rem;
+  }
+  .feature-detail {
+    margin: 0;
+    color: var(--color-steel);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  @media (min-width: 700px) {
+    .feature-list {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem 2rem;
+    }
+  }
+</style>

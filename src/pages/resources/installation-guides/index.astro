@@ -1,0 +1,57 @@
+---
+/**
+ * Installation guides listing (type === 'installation-guide'). Drafts in dev only.
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import ArticleCard from '@components/blocks/ArticleCard.astro';
+import { formatDate } from '@lib/format';
+
+const all = await getCollection('blog', ({ data }) => data.type === 'installation-guide');
+const visible = (import.meta.env.PROD ? all.filter((p) => !p.data.draft) : all).sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+);
+---
+
+<BaseLayout
+  title="Installation Guides"
+  metaTitle="Weighbridge & Scale Installation Guides | Caliber Scales"
+  description="Practical installation guides covering foundations, setup, and commissioning for weighbridges and scales."
+  crumbs={[
+    { name: 'Resources', href: '/resources/' },
+    { name: 'Installation guides', href: '/resources/installation-guides/' },
+  ]}
+>
+  <Hero eyebrow="Resources" title="Installation guides" lede="Get installation and setup right the first time." showCtas={false} />
+
+  <Section>
+    {
+      visible.length > 0 ? (
+        <div class="grid">
+          {visible.map((p) => (
+            <ArticleCard
+              title={p.data.title}
+              href={`/resources/installation-guides/${p.id}/`}
+              excerpt={p.data.excerpt}
+              date={formatDate(p.data.publishDate)}
+              image={p.data.heroImage}
+              tag="Installation guide"
+              draft={p.data.draft}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="empty">No installation guides published yet — check back soon.</p>
+      )
+    }
+  </Section>
+</BaseLayout>
+
+<style>
+  .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+  .empty { color: var(--color-steel); }
+  @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 980px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+</style>

@@ -1,0 +1,52 @@
+---
+/**
+ * ClientLogos — logo strip (spec B5). Renders only the logos passed in; the
+ * caller decides whether to show the section at all. We never invent client
+ * names or logos — display requires real assets + permission (spec A10).
+ */
+export interface ClientLogo {
+  name: string;
+  /** Path under /public, e.g. /images/clients/acme.svg */
+  src: string;
+}
+
+interface Props {
+  logos: ClientLogo[];
+}
+
+const { logos } = Astro.props;
+---
+
+<ul class="logo-strip">
+  {
+    logos.map((logo) => (
+      <li class="logo-item">
+        <img src={logo.src} alt={logo.name} loading="lazy" height="48" />
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .logo-strip {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem 3rem;
+  }
+  .logo-item img {
+    height: 48px;
+    width: auto;
+    filter: grayscale(1);
+    opacity: 0.75;
+    transition: filter 0.15s ease, opacity 0.15s ease;
+  }
+  .logo-item img:hover {
+    filter: grayscale(0);
+    opacity: 1;
+  }
+</style>

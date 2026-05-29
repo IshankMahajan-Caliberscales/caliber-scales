@@ -1,0 +1,88 @@
+---
+/**
+ * About → Certifications. States the confirmed ISO 9001:2015 certification.
+ * No certificate numbers, issuers, or additional certifications are invented —
+ * the certificate scan/PDF and any further accreditations are added once the
+ * client provides them (spec A10, "never fabricate certifications").
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import { STATS } from '@lib/site';
+---
+
+<BaseLayout
+  title="Certifications"
+  description={`Caliber Scales India is ${STATS.certification} certified. View our quality certifications.`}
+  crumbs={[
+    { name: 'About', href: '/about/' },
+    { name: 'Certifications', href: '/about/certifications/' },
+  ]}
+>
+  <Hero
+    eyebrow="About us"
+    title="Certifications"
+    lede="Quality you can verify — backed by an internationally recognised quality-management standard."
+    showCtas={false}
+  />
+
+  <Section>
+    <div class="cert-grid">
+      <div class="cert-card">
+        <span class="cert-badge">{STATS.certification}</span>
+        <h2>Quality Management System</h2>
+        <p>
+          Caliber Scales India operates a quality-management system certified to
+          <strong>{STATS.certification}</strong>, the international standard for
+          consistent quality and continual improvement.
+        </p>
+        <p class="placeholder-note">
+          🚧 The certificate document (scan/PDF), certifying body, and validity
+          dates will be displayed here once provided by the client.
+        </p>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .cert-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr;
+    max-width: 720px;
+  }
+  .cert-card {
+    border: 1px solid #e4e9ee;
+    border-radius: var(--radius-card);
+    padding: 1.5rem;
+    background: #fff;
+  }
+  .cert-badge {
+    display: inline-block;
+    background: var(--color-navy);
+    color: #fff;
+    font-weight: 500;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+  .cert-card h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+  }
+  .cert-card p {
+    margin: 0 0 0.75rem;
+    color: #1a2433;
+    line-height: 1.7;
+  }
+  .placeholder-note {
+    padding: 0.75rem 1rem;
+    background: var(--color-surface);
+    border: 1px dashed var(--color-steel);
+    border-radius: var(--radius-card);
+    font-size: 0.88rem;
+    color: var(--color-steel) !important;
+  }
+</style>

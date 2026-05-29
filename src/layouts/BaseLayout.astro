@@ -1,0 +1,113 @@
+---
+/**
+ * BaseLayout — the shell every page renders into (spec B5).
+ * Provides: <head> SEO, sitewide Organization + WebSite JSON-LD, Header,
+ * optional breadcrumbs, main slot, CTABand, Footer, mobile StickyCTA, and the
+ * WhatsApp float. Pages pass SEO + breadcrumb data via props.
+ */
+import '@styles/global.css';
+import { SITE } from '@lib/site';
+import { organizationSchema, webSiteSchema, type Crumb } from '@lib/schema';
+import SEOHead from '@components/seo/SEOHead.astro';
+import JsonLd from '@components/seo/JsonLd.astro';
+import Header from '@components/layout/Header.astro';
+import Footer from '@components/layout/Footer.astro';
+import Breadcrumbs from '@components/layout/Breadcrumbs.astro';
+import CTABand from '@components/blocks/CTABand.astro';
+import StickyCTA from '@components/blocks/StickyCTA.astro';
+import WhatsAppFloat from '@components/blocks/WhatsAppFloat.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  metaTitle?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  /** Breadcrumb trail excluding Home + excluding nothing else; current page last. */
+  crumbs?: Crumb[];
+  showCTABand?: boolean;
+  ctaHeading?: string;
+  ctaSub?: string;
+}
+
+const {
+  title,
+  description,
+  metaTitle,
+  ogImage,
+  ogType,
+  noindex = false,
+  crumbs,
+  showCTABand = true,
+  ctaHeading,
+  ctaSub,
+} = Astro.props;
+
+const path = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content={SITE.themeColor} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <SEOHead
+      title={title}
+      description={description}
+      path={path}
+      metaTitle={metaTitle}
+      ogImage={ogImage}
+      ogType={ogType}
+      noindex={noindex}
+    />
+
+    <!-- Sitewide structured data (spec B6). -->
+    <JsonLd schema={[organizationSchema(), webSiteSchema()]} />
+
+    <slot name="head" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <Header />
+
+    {crumbs && crumbs.length > 0 && <Breadcrumbs crumbs={crumbs} />}
+
+    <main id="main">
+      <slot />
+    </main>
+
+    {showCTABand && <CTABand heading={ctaHeading} sub={ctaSub} />}
+
+    <Footer />
+    <StickyCTA />
+    <WhatsAppFloat />
+
+    <style>
+      .skip-link {
+        position: absolute;
+        left: -999px;
+        top: 0;
+        z-index: 100;
+        background: var(--color-navy);
+        color: #fff;
+        padding: 0.75rem 1rem;
+        border-radius: 0 0 8px 0;
+      }
+      .skip-link:focus {
+        left: 0;
+      }
+      /* Keep content clear of the mobile sticky CTA bar. */
+      @media (max-width: 899px) {
+        main {
+          padding-bottom: 4.5rem;
+        }
+      }
+    </style>
+  </body>
+</html>

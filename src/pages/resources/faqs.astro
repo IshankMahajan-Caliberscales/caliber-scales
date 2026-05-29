@@ -1,0 +1,73 @@
+---
+/**
+ * /resources/faqs/ — all FAQs grouped by category. Emits a single FAQPage
+ * JSON-LD for the whole page (accordions render without their own schema to
+ * avoid duplicate FAQPage blocks). Drafts shown only in dev.
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import FAQAccordion from '@components/blocks/FAQAccordion.astro';
+import JsonLd from '@components/seo/JsonLd.astro';
+import { faqSchema, type FaqItem } from '@lib/schema';
+
+const all = await getCollection('faqs');
+const visible = import.meta.env.PROD ? all.filter((f) => !f.data.draft) : all;
+
+// Group by category, preserving a stable order.
+const groups = new Map<string, FaqItem[]>();
+for (const f of visible) {
+  const list = groups.get(f.data.category) ?? [];
+  list.push({ q: f.data.question, a: f.data.answer });
+  groups.set(f.data.category, list);
+}
+const categories = [...groups.entries()];
+const allFaqs: FaqItem[] = categories.flatMap(([, items]) => items);
+---
+
+<BaseLayout
+  title="Frequently Asked Questions"
+  metaTitle="Weighing FAQs | Caliber Scales India"
+  description="Answers to common questions about weighbridges, scales, calibration, installation, and service."
+  crumbs={[
+    { name: 'Resources', href: '/resources/' },
+    { name: 'FAQs', href: '/resources/faqs/' },
+  ]}
+>
+  <Hero eyebrow="Resources" title="Frequently asked questions" lede="Common questions about our weighing equipment and services." showCtas={false} />
+
+  <Section>
+    {
+      categories.length > 0 ? (
+        <div class="faq-groups">
+          {categories.map(([category, items]) => (
+            <div class="faq-group">
+              <h2>{category}</h2>
+              <FAQAccordion faqs={items} emitSchema={false} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p class="empty">FAQs are coming soon.</p>
+      )
+    }
+  </Section>
+
+  {allFaqs.length > 0 && <JsonLd schema={faqSchema(allFaqs)} />}
+</BaseLayout>
+
+<style>
+  .faq-groups {
+    display: grid;
+    gap: 2.5rem;
+    max-width: 820px;
+  }
+  .faq-group h2 {
+    font-size: 1.3rem;
+    margin: 0 0 1rem;
+  }
+  .empty {
+    color: var(--color-steel);
+  }
+</style>

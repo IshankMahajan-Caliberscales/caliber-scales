@@ -1,0 +1,71 @@
+---
+/**
+ * Full-width call-to-action band, placed near the foot of every page (spec B5).
+ * Headline + sub configurable; offers Quote / WhatsApp / Call actions.
+ */
+import { whatsappLink, telLink, CONTACT } from '@lib/site';
+
+interface Props {
+  heading?: string;
+  sub?: string;
+}
+
+const {
+  heading = 'Need the right weighing solution for your site?',
+  sub = 'Talk to a manufacturer, not a reseller. Get specs, pricing, and a recommendation for your application.',
+} = Astro.props;
+---
+
+<section class="cta-band">
+  <div class="container-page cta-inner">
+    <div>
+      <h2 class="cta-heading">{heading}</h2>
+      <p class="cta-sub">{sub}</p>
+    </div>
+    <div class="cta-actions">
+      <a href="/contact/" class="btn btn-primary">Request a quote</a>
+      <a href={whatsappLink()} class="btn btn-whatsapp" rel="noopener" data-cta="whatsapp">
+        WhatsApp
+      </a>
+      <a href={telLink()} class="btn btn-secondary cta-call" data-cta="call">
+        Call {CONTACT.phoneDisplay}
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    background: var(--color-surface);
+    border-top: 1px solid #e4e9ee;
+    border-bottom: 1px solid #e4e9ee;
+  }
+  .cta-inner {
+    display: grid;
+    gap: 1.5rem;
+    padding-block: 2.5rem;
+  }
+  .cta-heading {
+    margin: 0 0 0.5rem;
+    font-size: 1.4rem;
+  }
+  .cta-sub {
+    margin: 0;
+    color: var(--color-steel);
+    max-width: 48ch;
+  }
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .cta-call {
+    background: #fff;
+  }
+  @media (min-width: 800px) {
+    .cta-inner {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+  }
+</style>

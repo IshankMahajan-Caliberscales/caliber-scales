@@ -1,0 +1,185 @@
+---
+/**
+ * LeadForm — short lead form (Name, Company, Phone, Requirement + honeypot),
+ * spec B8. Submits to /api/lead via fetch (no full reload) and shows inline
+ * success/error. The honeypot field `website` is hidden from real users.
+ */
+interface Props {
+  heading?: string;
+  sub?: string;
+  /** Identifies which page/section produced the lead (hidden field). */
+  source?: string;
+}
+
+const {
+  heading = 'Request a quote',
+  sub = 'Tell us what you need and our team will get back to you, usually the same business day.',
+  source = 'website',
+} = Astro.props;
+---
+
+<div class="lead-card">
+  <div class="lead-head">
+    <h2 class="lead-title">{heading}</h2>
+    <p class="lead-sub">{sub}</p>
+  </div>
+
+  <form class="lead-form" novalidate data-source={source}>
+    <div class="field">
+      <label for="lf-name">Name<span aria-hidden="true">*</span></label>
+      <input id="lf-name" name="name" type="text" autocomplete="name" required />
+    </div>
+    <div class="field">
+      <label for="lf-company">Company</label>
+      <input id="lf-company" name="company" type="text" autocomplete="organization" />
+    </div>
+    <div class="field">
+      <label for="lf-phone">Phone<span aria-hidden="true">*</span></label>
+      <input id="lf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required />
+    </div>
+    <div class="field">
+      <label for="lf-req">What do you need?<span aria-hidden="true">*</span></label>
+      <textarea id="lf-req" name="requirement" rows="3" required></textarea>
+    </div>
+
+    {/* Honeypot — hidden from humans; bots tend to fill it. */}
+    <div class="hp" aria-hidden="true">
+      <label for="lf-website">Website</label>
+      <input id="lf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <input type="hidden" name="source" value={source} />
+
+    <button type="submit" class="btn btn-primary lead-submit">Send enquiry</button>
+
+    <p class="lead-status" role="status" aria-live="polite" hidden></p>
+  </form>
+</div>
+
+<style>
+  .lead-card {
+    background: #fff;
+    border: 1px solid #e4e9ee;
+    border-radius: var(--radius-card);
+    padding: 1.5rem;
+    box-shadow: 0 18px 40px -28px rgba(12, 45, 82, 0.45);
+  }
+  .lead-title {
+    margin: 0 0 0.35rem;
+    font-size: 1.35rem;
+  }
+  .lead-sub {
+    margin: 0 0 1.25rem;
+    color: var(--color-steel);
+    font-size: 0.95rem;
+  }
+  .lead-form {
+    display: grid;
+    gap: 0.9rem;
+  }
+  .field {
+    display: grid;
+    gap: 0.3rem;
+  }
+  .field label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-navy);
+  }
+  .field label span {
+    color: var(--color-accent);
+    margin-left: 2px;
+  }
+  .field input,
+  .field textarea {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #c9d2dc;
+    border-radius: var(--radius-btn);
+    font: inherit;
+    color: var(--color-navy);
+    background: #fff;
+  }
+  .field input:focus,
+  .field textarea:focus {
+    border-color: var(--color-accent);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 115, 190, 0.18);
+  }
+  /* Honeypot — visually + assistively hidden, still in the DOM for bots. */
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .lead-submit {
+    width: 100%;
+    margin-top: 0.25rem;
+  }
+  .lead-status {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    padding: 0.65rem 0.8rem;
+    border-radius: var(--radius-btn);
+  }
+  .lead-status.is-success {
+    background: rgba(29, 158, 117, 0.12);
+    color: #0f6b4e;
+  }
+  .lead-status.is-error {
+    background: rgba(190, 30, 45, 0.1);
+    color: #9b2226;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('form.lead-form').forEach((form) => {
+    const status = form.querySelector<HTMLParagraphElement>('.lead-status');
+    const submit = form.querySelector<HTMLButtonElement>('.lead-submit');
+
+    const setStatus = (msg: string, kind: 'success' | 'error') => {
+      if (!status) return;
+      status.textContent = msg;
+      status.hidden = false;
+      status.classList.remove('is-success', 'is-error');
+      status.classList.add(kind === 'success' ? 'is-success' : 'is-error');
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const payload = Object.fromEntries(new FormData(form).entries());
+      submit?.setAttribute('disabled', 'true');
+      const original = submit?.textContent;
+      if (submit) submit.textContent = 'Sending…';
+
+      try {
+        const res = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.ok) {
+          setStatus(data.message || 'Thank you — we will be in touch shortly.', 'success');
+          form.reset();
+          // GA4 conversion hook (wired in Phase 8).
+          (window as any).dataLayer?.push?.({ event: 'lead_submit' });
+        } else if (res.status === 429) {
+          setStatus('Too many attempts. Please try again in a minute.', 'error');
+        } else {
+          setStatus('Sorry, something went wrong. Please call or WhatsApp us instead.', 'error');
+        }
+      } catch {
+        setStatus('Network error. Please check your connection or call us directly.', 'error');
+      } finally {
+        submit?.removeAttribute('disabled');
+        if (submit && original) submit.textContent = original;
+      }
+    });
+  });
+</script>

@@ -1,0 +1,65 @@
+---
+/**
+ * About → Infrastructure / manufacturing unit. Structure is in place; real
+ * descriptions, capacity figures, and photos of the unit are added once the
+ * client provides them (spec A10) — nothing about the facility is invented.
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+---
+
+<BaseLayout
+  title="Infrastructure & Manufacturing"
+  description="Inside Caliber Scales India's manufacturing capabilities for industrial weighing equipment."
+  crumbs={[
+    { name: 'About', href: '/about/' },
+    { name: 'Infrastructure', href: '/about/infrastructure/' },
+  ]}
+>
+  <Hero
+    eyebrow="About us"
+    title="Infrastructure & manufacturing"
+    lede="As a manufacturer, we build and quality-check our weighing systems in-house."
+    showCtas={false}
+  />
+
+  <Section title="Our manufacturing capability">
+    <p class="lead-para">
+      Caliber Scales operates modern, well-maintained manufacturing facilities,
+      equipped with the machinery and equipment needed to produce quality
+      weighing products at competitive prices. Building in-house gives us direct
+      control over engineering, fabrication, and quality — and the flexibility to
+      configure weighbridges, scales, and weighing systems to each customer's
+      application and site.
+    </p>
+    <p class="lead-para">
+      Our operating principle is simple: deliver dependable quality at the best
+      possible value, and stand behind it. A dedicated team of experienced,
+      trained service engineers provides installation, calibration, and
+      after-sales support across India.
+    </p>
+    <p class="placeholder-note">
+      🚧 Specific facility details (location, area, machinery list, production
+      capacity) and photographs of the manufacturing unit will be added here once
+      provided by the client.
+    </p>
+  </Section>
+</BaseLayout>
+
+<style>
+  .lead-para {
+    max-width: 65ch;
+    line-height: 1.7;
+    margin: 0 0 1.25rem;
+  }
+  .placeholder-note {
+    max-width: 65ch;
+    padding: 0.75rem 1rem;
+    background: var(--color-surface);
+    border: 1px dashed var(--color-steel);
+    border-radius: var(--radius-card);
+    font-size: 0.88rem;
+    color: var(--color-steel);
+  }
+</style>

@@ -1,0 +1,104 @@
+---
+/**
+ * About — company overview (spec A4/B4). Uses only confirmed facts (founded
+ * 2001, ISO 9001:2015, 5,000+ installations, 25+ states & UTs, Delhi HQ).
+ * Detailed history/profile prose is flagged as pending real client copy.
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import TrustBar from '@components/blocks/TrustBar.astro';
+import FeatureList from '@components/blocks/FeatureList.astro';
+import ProductGrid from '@components/blocks/ProductGrid.astro';
+import { STATS, CONTACT } from '@lib/site';
+
+const subpages = [
+  { title: 'Certifications', href: '/about/certifications/', blurb: 'ISO 9001:2015 and our quality commitments.' },
+  { title: 'Infrastructure', href: '/about/infrastructure/', blurb: 'Our manufacturing unit and capabilities.' },
+  { title: 'Team', href: '/about/team/', blurb: 'The people behind Caliber Scales.' },
+];
+---
+
+<BaseLayout
+  title="About Caliber Scales"
+  description={`Caliber Scales India is an ISO 9001:2015 certified manufacturer of industrial weighing solutions, established in ${STATS.foundedYear}, with ${STATS.installations} installations across ${STATS.statesCovered} states and Union Territories.`}
+  crumbs={[{ name: 'About', href: '/about/' }]}
+>
+  <Hero
+    eyebrow="About us"
+    title="A weighing manufacturer, trusted across India"
+    lede={`Established in ${STATS.foundedYear}, Caliber Scales India designs, manufactures, installs, and services industrial weighing equipment — from weighbridges to precision balances.`}
+    showCtas={false}
+  />
+
+  <TrustBar />
+
+  <Section title="Who we are">
+    <div class="prose">
+      <p>
+        Founded in <strong>{STATS.foundedYear}</strong>, Caliber Scales India Pvt. Ltd. is an
+        <strong>{STATS.certification} certified</strong> company and a leading manufacturer of
+        electronic weighing machines, weighbridges, and customised weighing
+        systems. From heavy-duty truck weighbridges to high-precision laboratory
+        balances, we design and build a complete range of industrial weighing
+        solutions — as a manufacturer, not a reseller, so we control the
+        engineering and quality of every system we supply.
+      </p>
+      <p>
+        Alongside standard products, we engineer <strong>customised and automation
+        solutions</strong> — including conveyor weighing systems, tank and vessel
+        weighing systems, and customised platform scales — built around each
+        customer's process and site.
+      </p>
+      <p>
+        Over <strong>{STATS.yearsInBusiness} years</strong>, our equipment has reached
+        <strong>{STATS.installations} installations</strong> and <strong>{STATS.clients} satisfied
+        clients</strong> across <strong>{STATS.statesCovered} states and Union Territories</strong>
+        of India, spanning logistics, cement, mining, pharma, steel, agriculture,
+        and more. We support customers end to end — design, manufacture,
+        installation, calibration, and ongoing maintenance — backed by a
+        dedicated team of experienced, trained service engineers for reliable
+        after-sales support.
+      </p>
+    </div>
+  </Section>
+
+  <Section surface title="Why work with us">
+    <FeatureList />
+  </Section>
+
+  <Section title="Explore">
+    <ProductGrid items={subpages} />
+  </Section>
+
+  <Section surface title="Visit or contact us">
+    <address class="contact-block">
+      {CONTACT.address.streetAddress},<br />
+      {CONTACT.address.addressLocality} {CONTACT.address.postalCode}, India<br />
+      <a href={`tel:${CONTACT.phone}`}>{CONTACT.phoneDisplay}</a> ·
+      <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+    </address>
+  </Section>
+</BaseLayout>
+
+<style>
+  .prose {
+    max-width: 65ch;
+  }
+  .prose p {
+    margin: 0 0 1rem;
+    line-height: 1.7;
+  }
+  .placeholder-note {
+    padding: 0.75rem 1rem;
+    background: var(--color-surface);
+    border: 1px dashed var(--color-steel);
+    border-radius: var(--radius-card);
+    font-size: 0.88rem;
+    color: var(--color-steel);
+  }
+  .contact-block {
+    font-style: normal;
+    line-height: 1.9;
+  }
+</style>

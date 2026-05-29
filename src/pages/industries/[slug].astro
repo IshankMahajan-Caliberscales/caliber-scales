@@ -1,0 +1,17 @@
+---
+/**
+ * /industries/<slug>/ — detail page per industry entry. Draft entries still
+ * render (no 404 from hub links) but are noindexed by IndustryLayout.
+ */
+import { getCollection, type CollectionEntry } from 'astro:content';
+import IndustryLayout from '@layouts/IndustryLayout.astro';
+
+export async function getStaticPaths() {
+  const industries = await getCollection('industries');
+  return industries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props as { entry: CollectionEntry<'industries'> };
+---
+
+<IndustryLayout entry={entry} />

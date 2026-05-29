@@ -1,0 +1,88 @@
+---
+/**
+ * ProductGrid — responsive grid of linked product-category cards (spec B5).
+ * Pass any CategoryCard[] (product categories or weighbridge types).
+ */
+import type { CategoryCard } from '@lib/catalog';
+
+interface Props {
+  items: CategoryCard[];
+}
+
+const { items } = Astro.props;
+---
+
+<ul class="product-grid">
+  {
+    items.map((item) => (
+      <li>
+        <a href={item.href} class="product-card">
+          <span class="product-title">
+            {item.title}
+            <span class="arrow" aria-hidden="true">→</span>
+          </span>
+          <span class="product-blurb">{item.blurb}</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .product-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 100%;
+    padding: 1.25rem;
+    background: #fff;
+    border: 1px solid #e4e9ee;
+    border-radius: var(--radius-card);
+    text-decoration: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .product-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 12px 28px -16px rgba(12, 45, 82, 0.4);
+    transform: translateY(-2px);
+  }
+  .product-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: var(--color-navy);
+  }
+  .arrow {
+    color: var(--color-accent);
+    transition: transform 0.15s ease;
+  }
+  .product-card:hover .arrow {
+    transform: translateX(3px);
+  }
+  .product-blurb {
+    color: var(--color-steel);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  @media (min-width: 600px) {
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 960px) {
+    .product-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

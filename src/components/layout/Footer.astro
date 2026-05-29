@@ -1,0 +1,176 @@
+---
+/**
+ * Site footer: company blurb, navigation columns, contact (address from spec
+ * B6, other fields are placeholders pending client confirmation), and legal
+ * links. The Organization/LocalBusiness JSON-LD is rendered in BaseLayout.
+ */
+import { SITE, CONTACT, STATS, NAV, telLink, whatsappLink } from '@lib/site';
+
+const year = 2026; // build-time constant; Date.now() is unavailable in this env
+const columns = NAV.filter((i) => i.children);
+---
+
+<footer class="site-footer">
+  <div class="container-page footer-grid">
+    <div class="footer-about">
+      <img
+        src="/images/brand/caliber-logo.png"
+        alt={SITE.name}
+        class="footer-logo"
+        width="160"
+        height="80"
+        loading="lazy"
+      />
+      <p class="footer-name">{SITE.legalName}</p>
+      <p class="footer-blurb">{SITE.description}</p>
+      <p class="footer-cert">{STATS.certification} certified manufacturer</p>
+    </div>
+
+    {
+      columns.map((col) => (
+        <nav class="footer-col" aria-label={col.label}>
+          <h2 class="footer-heading">
+            <a href={col.href}>{col.label}</a>
+          </h2>
+          <ul>
+            {col.children!.map((c) => (
+              <li>
+                <a href={c.href}>{c.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+
+    <div class="footer-col footer-contact">
+      <h2 class="footer-heading">Contact</h2>
+      <address>
+        {CONTACT.address.streetAddress},<br />
+        {CONTACT.address.addressLocality} {CONTACT.address.postalCode}<br />
+        <a href={telLink()}>{CONTACT.phoneDisplay}</a><br />
+        <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a><br />
+        <a href={whatsappLink()} rel="noopener">WhatsApp</a>
+      </address>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <div class="container-page footer-bar-inner">
+      <p>© {year} {SITE.legalName}. All rights reserved.</p>
+      <nav aria-label="Legal" class="footer-legal">
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+        <a href="/contact/">Contact</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--color-navy);
+    color: #cdd6e1;
+    margin-top: 4rem;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding-block: 3rem;
+  }
+  .footer-name {
+    font-weight: 500;
+    color: #fff;
+    margin: 0.75rem 0 0.5rem;
+  }
+  .footer-blurb {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0 0 0.75rem;
+  }
+  .footer-cert {
+    font-size: 0.85rem;
+    color: #9fb0c4;
+    margin: 0;
+  }
+  .footer-heading {
+    font-size: 0.95rem;
+    color: #fff;
+    margin: 0 0 0.75rem;
+  }
+  .footer-heading a {
+    color: #fff;
+    text-decoration: none;
+  }
+  .footer-col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .footer-col a,
+  .footer-contact a {
+    color: #cdd6e1;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .footer-col a:hover,
+  .footer-contact a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+  address {
+    font-style: normal;
+    line-height: 1.8;
+    font-size: 0.9rem;
+  }
+  .footer-bar {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .footer-bar-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-block: 1.25rem;
+    font-size: 0.85rem;
+  }
+  .footer-legal {
+    display: flex;
+    gap: 1rem;
+  }
+  .footer-legal a {
+    color: #9fb0c4;
+    text-decoration: none;
+  }
+  .footer-legal a:hover {
+    color: #fff;
+  }
+  .footer-logo {
+    height: 46px;
+    width: auto;
+    display: block;
+    /* Logo is red script with a white outline on a transparent background,
+       so it reads clearly on the navy footer. A subtle white panel keeps it
+       legible regardless of how the artwork renders. */
+    background: #fff;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+
+  @media (min-width: 700px) {
+    .footer-grid {
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    }
+    .footer-about {
+      grid-column: 1;
+    }
+    .footer-bar-inner {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+</style>

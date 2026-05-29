@@ -1,0 +1,41 @@
+---
+/**
+ * Mobile-only sticky CTA bar (Call + Quote) fixed to the bottom (spec B5).
+ * Hidden on desktop where the header CTA is always visible.
+ */
+import { telLink } from '@lib/site';
+---
+
+<div class="sticky-cta" role="region" aria-label="Quick contact">
+  <a href={telLink()} class="btn btn-secondary" data-cta="call">
+    <span aria-hidden="true">📞</span> Call
+  </a>
+  <a href="/contact/" class="btn btn-primary" data-cta="quote">
+    Request quote
+  </a>
+</div>
+
+<style>
+  .sticky-cta {
+    display: none;
+  }
+  @media (max-width: 899px) {
+    .sticky-cta {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 65;
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: #fff;
+      border-top: 1px solid var(--color-surface);
+      box-shadow: 0 -6px 20px -10px rgba(12, 45, 82, 0.25);
+    }
+    .sticky-cta .btn {
+      width: 100%;
+    }
+  }
+</style>

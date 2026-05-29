@@ -1,0 +1,33 @@
+---
+/**
+ * Products hub (spec B4/B5) — routes to every product category. Dedicated
+ * category/product pages are built in Phase 4.
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import ProductGrid from '@components/blocks/ProductGrid.astro';
+import IndustryGrid from '@components/blocks/IndustryGrid.astro';
+import { PRODUCT_CATEGORIES } from '@lib/catalog';
+---
+
+<BaseLayout
+  title="Products"
+  metaTitle="Industrial Weighing Products | Caliber Scales India"
+  description="Explore Caliber Scales' range of industrial weighing equipment — weighbridges, platform scales, tank weighing systems, hanging scales, analytical balances, and more."
+  crumbs={[{ name: 'Products', href: '/products/' }]}
+>
+  <Hero
+    eyebrow="Products"
+    title="Industrial weighing equipment"
+    lede="From heavy-duty truck weighbridges to precision laboratory balances — engineered and manufactured by Caliber Scales."
+  />
+
+  <Section title="Browse by category">
+    <ProductGrid items={PRODUCT_CATEGORIES} />
+  </Section>
+
+  <Section surface title="Find products by industry" intro="Not sure which product fits? Start from your sector.">
+    <IndustryGrid />
+  </Section>
+</BaseLayout>

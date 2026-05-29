@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Block the serverless form handler and the CMS admin from crawlers.
+Disallow: /api/
+Disallow: /keystatic
+
+Sitemap: https://caliberscales.com/sitemap-index.xml

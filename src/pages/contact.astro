@@ -1,0 +1,149 @@
+---
+/**
+ * Contact (spec B4/B5/B8): contact details, lead form, WhatsApp + click-to-call,
+ * dealer inquiry, and a map (rendered when a real embed URL is configured).
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import LeadForm from '@components/blocks/LeadForm.astro';
+import { CONTACT, telLink, whatsappLink } from '@lib/site';
+---
+
+<BaseLayout
+  title="Contact Us"
+  description="Get in touch with Caliber Scales India for quotes, product information, service, and dealer inquiries. Call, WhatsApp, or send an enquiry."
+  crumbs={[{ name: 'Contact', href: '/contact/' }]}
+  showCTABand={false}
+>
+  <Hero
+    eyebrow="Contact"
+    title="Talk to the manufacturer"
+    lede="Quotes, product specifications, service, or dealership — reach us by phone, WhatsApp, email, or the form below."
+    showCtas={false}
+  />
+
+  <Section>
+    <div class="contact-layout">
+      <div class="contact-info">
+        <h2>Reach us directly</h2>
+
+        <div class="contact-row">
+          <span class="contact-label">Phone</span>
+          <a href={telLink()} data-cta="call">{CONTACT.phoneDisplay}</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">WhatsApp</span>
+          <a href={whatsappLink()} rel="noopener" data-cta="whatsapp">Chat on WhatsApp</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">Email</span>
+          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">Address</span>
+          <address>
+            {CONTACT.address.streetAddress},<br />
+            {CONTACT.address.addressLocality} {CONTACT.address.postalCode}, India
+          </address>
+        </div>
+
+        <div class="dealer-box">
+          <h3>Become a dealer</h3>
+          <p>Interested in distributing Caliber Scales products? Tell us in the form and mention “dealer inquiry”.</p>
+        </div>
+
+        {
+          CONTACT.mapsEmbedUrl ? (
+            <div class="map-wrap">
+              <iframe
+                src={CONTACT.mapsEmbedUrl}
+                title="Caliber Scales location map"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                width="100%"
+                height="280"
+                style="border:0;border-radius:8px"
+              />
+            </div>
+          ) : (
+            <p class="placeholder-note">
+              🚧 Google Maps embed will appear here once the embed URL from the
+              current site is provided.
+            </p>
+          )
+        }
+      </div>
+
+      <div class="contact-form">
+        <LeadForm
+          source="contact"
+          heading="Send an enquiry"
+          sub="Share your requirement and we will respond, usually the same business day."
+        />
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .contact-layout {
+    display: grid;
+    gap: 2.5rem;
+  }
+  .contact-info h2 {
+    margin: 0 0 1.25rem;
+    font-size: 1.4rem;
+  }
+  .contact-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 0.5rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #e4e9ee;
+    align-items: baseline;
+  }
+  .contact-label {
+    font-weight: 500;
+    color: var(--color-steel);
+    font-size: 0.9rem;
+  }
+  .contact-row address {
+    font-style: normal;
+    line-height: 1.6;
+  }
+  .dealer-box {
+    margin-top: 1.5rem;
+    padding: 1rem 1.1rem;
+    background: var(--color-surface);
+    border-radius: var(--radius-card);
+  }
+  .dealer-box h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+  }
+  .dealer-box p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--color-steel);
+  }
+  .map-wrap {
+    margin-top: 1.5rem;
+  }
+  .placeholder-note {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-surface);
+    border: 1px dashed var(--color-steel);
+    border-radius: var(--radius-card);
+    font-size: 0.88rem;
+    color: var(--color-steel);
+  }
+  @media (min-width: 900px) {
+    .contact-layout {
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+  }
+</style>

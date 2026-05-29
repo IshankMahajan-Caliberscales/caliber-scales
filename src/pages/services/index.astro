@@ -1,0 +1,27 @@
+---
+/**
+ * Services hub (spec B4/B5) — links to every service page.
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import ProductGrid from '@components/blocks/ProductGrid.astro';
+import { SERVICES } from '@lib/catalog';
+---
+
+<BaseLayout
+  title="Services"
+  metaTitle="Installation, Calibration & AMC Services | Caliber Scales India"
+  description="Caliber Scales provides installation, calibration, AMC, repair, and software integration for industrial weighing equipment across India."
+  crumbs={[{ name: 'Services', href: '/services/' }]}
+>
+  <Hero
+    eyebrow="Services"
+    title="Service across the equipment lifecycle"
+    lede="From installation and calibration to AMC, repair, and software integration — supported nationwide by the manufacturer."
+  />
+
+  <Section title="Our services">
+    <ProductGrid items={SERVICES} />
+  </Section>
+</BaseLayout>

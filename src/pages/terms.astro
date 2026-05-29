@@ -1,0 +1,63 @@
+---
+/**
+ * Terms & conditions — PLACEHOLDER. Provides the route (footer link +
+ * /terms-and-conditions.php redirect target) pending client/legal review.
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+---
+
+<BaseLayout
+  title="Terms & Conditions"
+  description="The terms governing use of the Caliber Scales India website."
+  crumbs={[{ name: 'Terms', href: '/terms/' }]}
+  showCTABand={false}
+>
+  <Hero eyebrow="Legal" title="Terms & conditions" showCtas={false} />
+
+  <Section>
+    <div class="legal">
+      <p class="placeholder-note">
+        🚧 <strong>Draft placeholder.</strong> These terms must be reviewed and
+        approved by the client (and ideally legal counsel) before launch.
+      </p>
+
+      <h2>Use of this website</h2>
+      <p>
+        The content on this site is provided for general information about
+        Caliber Scales India's products and services. Specifications and
+        availability may change; please confirm details with us before ordering.
+      </p>
+
+      <h2>Intellectual property</h2>
+      <p>
+        Content, branding, and images on this site are the property of Caliber
+        Scales India unless stated otherwise, and may not be reused without
+        permission.
+      </p>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .legal {
+    max-width: 70ch;
+  }
+  .legal h2 {
+    font-size: 1.2rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .legal p {
+    line-height: 1.7;
+    margin: 0 0 1rem;
+  }
+  .placeholder-note {
+    padding: 0.75rem 1rem;
+    background: var(--color-surface);
+    border: 1px dashed var(--color-steel);
+    border-radius: var(--radius-card);
+    font-size: 0.9rem;
+    color: var(--color-steel);
+  }
+</style>

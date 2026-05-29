@@ -1,0 +1,71 @@
+---
+/**
+ * Blog listing — articles (type === 'article'). Drafts shown only in dev.
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import ArticleCard from '@components/blocks/ArticleCard.astro';
+import { formatDate } from '@lib/format';
+
+const all = await getCollection('blog', ({ data }) => data.type === 'article');
+const visible = (import.meta.env.PROD ? all.filter((p) => !p.data.draft) : all).sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+);
+---
+
+<BaseLayout
+  title="Blog"
+  metaTitle="Industrial Weighing Blog | Caliber Scales India"
+  description="Articles on weighbridges, scales, calibration, and industrial weighing best practice — from a manufacturer."
+  crumbs={[
+    { name: 'Resources', href: '/resources/' },
+    { name: 'Blog', href: '/resources/blog/' },
+  ]}
+>
+  <Hero eyebrow="Resources" title="Blog" lede="Expert articles on industrial weighing." showCtas={false} />
+
+  <Section>
+    {
+      visible.length > 0 ? (
+        <div class="grid">
+          {visible.map((p) => (
+            <ArticleCard
+              title={p.data.title}
+              href={`/resources/blog/${p.id}/`}
+              excerpt={p.data.excerpt}
+              date={formatDate(p.data.publishDate)}
+              image={p.data.heroImage}
+              tag={p.data.tags[0]}
+              draft={p.data.draft}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="empty">No articles published yet — check back soon.</p>
+      )
+    }
+  </Section>
+</BaseLayout>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .empty {
+    color: var(--color-steel);
+  }
+  @media (min-width: 640px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 980px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

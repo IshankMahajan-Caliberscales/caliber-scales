@@ -1,0 +1,42 @@
+---
+/**
+ * Breadcrumbs — visible trail + emits BreadcrumbList JSON-LD (spec B5/B6).
+ * Pass the crumb chain INCLUDING the current page; Home is prepended here.
+ */
+import { breadcrumbSchema, type Crumb } from '@lib/schema';
+import JsonLd from '@components/seo/JsonLd.astro';
+
+interface Props {
+  crumbs: Crumb[];
+}
+
+const { crumbs } = Astro.props;
+const trail: Crumb[] = [{ name: 'Home', href: '/' }, ...crumbs];
+---
+
+<nav aria-label="Breadcrumb" class="container-page py-3 text-sm text-steel">
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+    {
+      trail.map((c, i) => (
+        <li class="flex items-center gap-x-2">
+          {i < trail.length - 1 ? (
+            <>
+              <a href={c.href} class="hover:underline">
+                {c.name}
+              </a>
+              <span aria-hidden="true" class="text-steel/60">
+                ›
+              </span>
+            </>
+          ) : (
+            <span aria-current="page" class="text-navy">
+              {c.name}
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<JsonLd schema={breadcrumbSchema(trail)} />

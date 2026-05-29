@@ -1,0 +1,17 @@
+---
+/**
+ * /services/<slug>/ — detail page per service entry. Draft entries still render
+ * (no 404 from hub links) but are noindexed by ServiceLayout.
+ */
+import { getCollection, type CollectionEntry } from 'astro:content';
+import ServiceLayout from '@layouts/ServiceLayout.astro';
+
+export async function getStaticPaths() {
+  const services = await getCollection('services');
+  return services.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props as { entry: CollectionEntry<'services'> };
+---
+
+<ServiceLayout entry={entry} />

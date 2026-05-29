@@ -1,0 +1,149 @@
+---
+/**
+ * ServiceLayout — service page (spec B5): intro, process steps, MDX body,
+ * FAQs (+FAQ schema), and a lead form. Draft entries are noindexed.
+ */
+import { render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import FAQAccordion from '@components/blocks/FAQAccordion.astro';
+import LeadForm from '@components/blocks/LeadForm.astro';
+
+interface Props {
+  entry: CollectionEntry<'services'>;
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const url = `/services/${entry.id}/`;
+const noindex = d.draft || d.noindex;
+---
+
+<BaseLayout
+  title={d.name}
+  metaTitle={d.metaTitle}
+  description={d.metaDescription}
+  ogImage={d.ogImage ?? d.heroImage}
+  noindex={noindex}
+  crumbs={[
+    { name: 'Services', href: '/services/' },
+    { name: d.name, href: url },
+  ]}
+  ctaHeading={`Talk to us about ${d.name.toLowerCase()}`}
+>
+  <Hero title={d.name} lede={d.intro} image={d.heroImage} imageAlt={d.name} />
+
+  {
+    d.draft && (
+      <div class="draft-banner container-page">
+        🚧 Draft / sample content — not indexed by search engines until finalised.
+      </div>
+    )
+  }
+
+  <Section>
+    <div class="svc-body">
+      <div class="prose">
+        <Content />
+      </div>
+
+      {
+        d.process.length > 0 && (
+          <div class="block">
+            <h2>How it works</h2>
+            <ol class="process">
+              {d.process.map((step) => (
+                <li>
+                  <span class="step-title">{step.step}</span>
+                  <span class="step-detail">{step.detail}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )
+      }
+
+      {
+        d.faqs.length > 0 && (
+          <div class="block">
+            <h2>Frequently asked questions</h2>
+            <FAQAccordion faqs={d.faqs.map((f) => ({ q: f.q, a: f.a }))} />
+          </div>
+        )
+      }
+    </div>
+  </Section>
+
+  <Section surface>
+    <LeadForm source={`service:${entry.id}`} heading={`Request ${d.name.toLowerCase()}`} />
+  </Section>
+</BaseLayout>
+
+<style>
+  .draft-banner {
+    margin-top: 1rem;
+    padding: 0.65rem 1rem;
+    background: #fff8e1;
+    border: 1px dashed #d4a017;
+    border-radius: var(--radius-card);
+    font-size: 0.88rem;
+    color: #7a5c00;
+  }
+  .svc-body {
+    display: grid;
+    gap: 2.25rem;
+    max-width: 760px;
+  }
+  .prose :global(p) {
+    line-height: 1.75;
+    margin: 0 0 1rem;
+  }
+  .prose :global(h2) {
+    font-size: 1.4rem;
+    margin: 1.75rem 0 0.75rem;
+  }
+  .block h2 {
+    font-size: 1.4rem;
+    margin: 0 0 1rem;
+  }
+  .process {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: step;
+    display: grid;
+    gap: 1rem;
+  }
+  .process li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 3rem;
+  }
+  .process li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    background: var(--color-navy);
+    color: #fff;
+    border-radius: 50%;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  .step-title {
+    display: block;
+    font-weight: 500;
+    color: var(--color-navy);
+  }
+  .step-detail {
+    display: block;
+    margin-top: 0.2rem;
+    color: var(--color-steel);
+  }
+</style>

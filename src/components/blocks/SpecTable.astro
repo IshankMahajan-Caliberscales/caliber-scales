@@ -1,0 +1,61 @@
+---
+/**
+ * SpecTable — renders a product's specifications as a two-column table
+ * (spec B5). Pass an array of {label, value}.
+ */
+interface Props {
+  specs: { label: string; value: string }[];
+  caption?: string;
+}
+
+const { specs, caption } = Astro.props;
+---
+
+{
+  specs.length > 0 && (
+    <div class="spec-wrap">
+      <table class="spec-table">
+        {caption && <caption class="sr-only">{caption}</caption>}
+        <tbody>
+          {specs.map((s) => (
+            <tr>
+              <th scope="row">{s.label}</th>
+              <td>{s.value}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+<style>
+  .spec-wrap {
+    overflow-x: auto;
+    border: 1px solid #e4e9ee;
+    border-radius: var(--radius-card);
+  }
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .spec-table tr + tr {
+    border-top: 1px solid #e4e9ee;
+  }
+  .spec-table th,
+  .spec-table td {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    vertical-align: top;
+  }
+  .spec-table th {
+    width: 40%;
+    color: var(--color-steel);
+    font-weight: 500;
+    background: var(--color-surface);
+  }
+  .spec-table td {
+    color: var(--color-navy);
+  }
+</style>

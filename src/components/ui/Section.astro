@@ -1,0 +1,59 @@
+---
+/**
+ * Section — consistent vertical rhythm + optional heading/intro for a page
+ * region. `surface` toggles the light grey background; `headingLevel` keeps the
+ * semantic hierarchy correct (one H1 per page lives in the Hero).
+ */
+interface Props {
+  title?: string;
+  intro?: string;
+  id?: string;
+  surface?: boolean;
+  headingLevel?: 2 | 3;
+  /** Center the heading block. */
+  centered?: boolean;
+}
+
+const { title, intro, id, surface = false, headingLevel = 2, centered = false } = Astro.props;
+const Heading = `h${headingLevel}` as const;
+---
+
+<section id={id} class:list={['section', { surface }]}>
+  <div class="container-page">
+    {
+      (title || intro) && (
+        <div class:list={['section-head', { centered }]}>
+          {title && <Heading class="section-title">{title}</Heading>}
+          {intro && <p class="section-intro">{intro}</p>}
+        </div>
+      )
+    }
+    <slot />
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: clamp(2.5rem, 6vw, 4rem);
+  }
+  .section.surface {
+    background: var(--color-surface);
+  }
+  .section-head {
+    max-width: 60ch;
+    margin-bottom: 2rem;
+  }
+  .section-head.centered {
+    margin-inline: auto;
+    text-align: center;
+  }
+  .section-title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin: 0 0 0.5rem;
+  }
+  .section-intro {
+    margin: 0;
+    color: var(--color-steel);
+    font-size: 1.05rem;
+  }
+</style>

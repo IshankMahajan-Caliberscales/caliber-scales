@@ -1,0 +1,53 @@
+---
+/**
+ * Case studies listing. Drafts shown only in dev.
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import CaseStudyCard from '@components/blocks/CaseStudyCard.astro';
+
+const all = await getCollection('caseStudies');
+const visible = import.meta.env.PROD ? all.filter((c) => !c.data.draft) : all;
+---
+
+<BaseLayout
+  title="Case Studies"
+  metaTitle="Weighing Case Studies & Installations | Caliber Scales"
+  description="Real industrial weighing installations from Caliber Scales — the challenges, solutions, and results."
+  crumbs={[
+    { name: 'Resources', href: '/resources/' },
+    { name: 'Case studies', href: '/resources/case-studies/' },
+  ]}
+>
+  <Hero eyebrow="Resources" title="Case studies" lede="Real installations and the results they delivered." showCtas={false} />
+
+  <Section>
+    {
+      visible.length > 0 ? (
+        <div class="grid">
+          {visible.map((c) => (
+            <CaseStudyCard
+              title={c.data.title}
+              href={`/resources/case-studies/${c.id}/`}
+              industry={c.data.industry}
+              clientName={c.data.clientName}
+              summary={c.data.result}
+              image={c.data.heroImage}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="empty">Case studies are coming soon.</p>
+      )
+    }
+  </Section>
+</BaseLayout>
+
+<style>
+  .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+  .empty { color: var(--color-steel); }
+  @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 980px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+</style>

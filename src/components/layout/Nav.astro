@@ -1,0 +1,127 @@
+---
+/**
+ * Primary navigation. Desktop: horizontal with hover/focus dropdowns.
+ * Mobile: a toggle button reveals a stacked menu (progressive enhancement —
+ * a tiny inline script in Header handles the toggle and keyboard support).
+ * Keyboard-navigable per B11.
+ */
+import { NAV } from '@lib/site';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+---
+
+<ul class="nav-list" id="primary-nav">
+  {
+    NAV.map((item) => (
+      <li class={`nav-item${item.children ? ' has-children' : ''}`}>
+        <a
+          href={item.href}
+          class="nav-link"
+          aria-current={isActive(item.href) ? 'page' : undefined}
+        >
+          {item.label}
+        </a>
+        {item.children && (
+          <>
+            <button
+              type="button"
+              class="nav-submenu-toggle"
+              aria-expanded="false"
+              aria-label={`Toggle ${item.label} submenu`}
+            >
+              <span aria-hidden="true">▾</span>
+            </button>
+            <ul class="nav-submenu">
+              {item.children.map((child) => (
+                <li>
+                  <a
+                    href={child.href}
+                    class="nav-sublink"
+                    aria-current={isActive(child.href) ? 'page' : undefined}
+                  >
+                    {child.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .nav-link,
+  .nav-sublink {
+    display: block;
+    padding: 0.6rem 0.75rem;
+    color: var(--color-navy);
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+  .nav-link:hover,
+  .nav-sublink:hover,
+  .nav-link[aria-current='page'] {
+    background-color: var(--color-surface);
+    color: var(--color-navy-600);
+  }
+  .nav-submenu {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 0.75rem;
+    display: none;
+  }
+  .nav-item.open > .nav-submenu {
+    display: block;
+  }
+  .nav-submenu-toggle {
+    background: none;
+    border: 0;
+    padding: 0.4rem 0.6rem;
+    color: var(--color-steel);
+    cursor: pointer;
+  }
+
+  /* Desktop */
+  @media (min-width: 900px) {
+    .nav-list {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .nav-item {
+      position: relative;
+    }
+    .nav-submenu-toggle {
+      display: none;
+    }
+    .nav-submenu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 16rem;
+      padding: 0.5rem;
+      background: #fff;
+      border: 1px solid var(--color-surface);
+      border-radius: var(--radius-card);
+      box-shadow: 0 12px 30px -12px rgba(12, 45, 82, 0.25);
+      z-index: 50;
+    }
+    .nav-item.has-children:hover > .nav-submenu,
+    .nav-item.has-children:focus-within > .nav-submenu {
+      display: block;
+    }
+  }
+</style>

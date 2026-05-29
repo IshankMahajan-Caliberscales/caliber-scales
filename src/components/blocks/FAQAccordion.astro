@@ -1,0 +1,99 @@
+---
+/**
+ * FAQAccordion — accessible FAQ list using native <details>/<summary> (no JS,
+ * keyboard-friendly). Optionally emits FAQPage JSON-LD (spec B6). Reused on
+ * product, industry, service, and hub pages.
+ */
+import JsonLd from '@components/seo/JsonLd.astro';
+import { faqSchema, type FaqItem } from '@lib/schema';
+
+interface Props {
+  faqs: FaqItem[];
+  /** Emit FAQPage structured data. Default true. */
+  emitSchema?: boolean;
+}
+
+const { faqs, emitSchema = true } = Astro.props;
+---
+
+{
+  faqs.length > 0 && (
+    <div class="faq">
+      {faqs.map((f) => (
+        <details class="faq-item">
+          <summary>
+            <span>{f.q}</span>
+            <span class="faq-icon" aria-hidden="true" />
+          </summary>
+          <div class="faq-answer">
+            <p>{f.a}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+  )
+}
+
+{emitSchema && faqs.length > 0 && <JsonLd schema={faqSchema(faqs)} />}
+
+<style>
+  .faq {
+    max-width: 760px;
+    border: 1px solid #e4e9ee;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+  }
+  .faq-item + .faq-item {
+    border-top: 1px solid #e4e9ee;
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--color-navy);
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-icon {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    position: relative;
+  }
+  .faq-icon::before,
+  .faq-icon::after {
+    content: '';
+    position: absolute;
+    background: var(--color-accent);
+    transition: transform 0.15s ease;
+  }
+  .faq-icon::before {
+    top: 6px;
+    left: 0;
+    width: 14px;
+    height: 2px;
+  }
+  .faq-icon::after {
+    top: 0;
+    left: 6px;
+    width: 2px;
+    height: 14px;
+  }
+  details[open] .faq-icon::after {
+    transform: scaleY(0);
+  }
+  .faq-answer {
+    padding: 0 1.1rem 1.1rem;
+    color: #1a2433;
+    line-height: 1.65;
+  }
+  .faq-answer p {
+    margin: 0;
+  }
+</style>

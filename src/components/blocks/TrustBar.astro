@@ -1,0 +1,65 @@
+---
+/**
+ * TrustBar — credibility stats strip (spec B5). Pulls confirmed figures from
+ * STATS. Renders as a band; place directly under the Hero on Home.
+ */
+import { STATS } from '@lib/site';
+
+const items = [
+  { value: STATS.installations, label: 'installations' },
+  { value: STATS.clients, label: 'satisfied clients' },
+  { value: STATS.yearsInBusiness, label: 'years manufacturing' },
+  { value: STATS.statesCovered, label: 'states & UTs' },
+  { value: STATS.certification, label: 'quality certified' },
+];
+---
+
+<section class="trustbar" aria-label="Caliber Scales at a glance">
+  <div class="container-page trust-grid">
+    {
+      items.map((t) => (
+        <div class="trust-item">
+          <span class="trust-value">{t.value}</span>
+          <span class="trust-label">{t.label}</span>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .trustbar {
+    background: var(--color-navy);
+    color: #fff;
+  }
+  .trust-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    padding-block: 1.75rem;
+    text-align: center;
+  }
+  .trust-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .trust-value {
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    font-weight: 500;
+  }
+  .trust-label {
+    font-size: 0.85rem;
+    color: #aebfd3;
+  }
+  @media (min-width: 560px) {
+    .trust-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (min-width: 880px) {
+    .trust-grid {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+</style>

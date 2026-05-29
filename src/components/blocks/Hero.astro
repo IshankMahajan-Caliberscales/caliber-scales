@@ -1,0 +1,99 @@
+---
+/**
+ * Hero — page headline block. Renders the page's single <h1>. Optional eyebrow,
+ * lede, primary/secondary CTAs (defaults to Quote / WhatsApp / Call), and an
+ * optional image. Used on Home and as the top of hub/landing pages.
+ */
+import { whatsappLink, telLink, CONTACT } from '@lib/site';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  /** Show the default Quote/WhatsApp/Call CTA row. */
+  showCtas?: boolean;
+  image?: string;
+  imageAlt?: string;
+}
+
+const { eyebrow, title, lede, showCtas = true, image, imageAlt = '' } = Astro.props;
+---
+
+<section class="hero">
+  <div class:list={['container-page', 'hero-inner', { 'has-image': !!image }]}>
+    <div class="hero-copy">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1>{title}</h1>
+      {lede && <p class="lede">{lede}</p>}
+      {
+        showCtas && (
+          <div class="hero-cta">
+            <a href="/contact/" class="btn btn-primary">Request a quote</a>
+            <a href={whatsappLink()} class="btn btn-whatsapp" rel="noopener" data-cta="whatsapp">
+              WhatsApp us
+            </a>
+            <a href={telLink()} class="btn btn-secondary" data-cta="call">
+              Call {CONTACT.phoneDisplay}
+            </a>
+          </div>
+        )
+      }
+      <slot />
+    </div>
+    {
+      image && (
+        <div class="hero-media">
+          <img src={image} alt={imageAlt} width="640" height="480" fetchpriority="high" />
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .hero {
+    background: linear-gradient(180deg, #fff 0%, var(--color-surface) 100%);
+  }
+  .hero-inner {
+    padding-block: clamp(2.5rem, 7vw, 5rem);
+  }
+  .hero-copy {
+    max-width: 60ch;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-accent);
+    margin: 0 0 0.75rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin: 0 0 1rem;
+  }
+  .lede {
+    font-size: 1.15rem;
+    color: var(--color-steel);
+    margin: 0 0 1.75rem;
+  }
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .hero-media img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-card);
+    object-fit: cover;
+  }
+  @media (min-width: 900px) {
+    .hero-inner.has-image {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2.5rem;
+      align-items: center;
+    }
+  }
+</style>

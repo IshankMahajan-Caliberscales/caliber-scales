@@ -1,0 +1,26 @@
+---
+/**
+ * Industries hub (spec B4/B5) — links to every industry page.
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import IndustryGrid from '@components/blocks/IndustryGrid.astro';
+---
+
+<BaseLayout
+  title="Industries We Serve"
+  metaTitle="Industrial Weighing by Industry | Caliber Scales India"
+  description="Weighing solutions tailored to your sector — logistics, warehousing, cement, mining, pharma, steel, agriculture, manufacturing, and chemical."
+  crumbs={[{ name: 'Industries', href: '/industries/' }]}
+>
+  <Hero
+    eyebrow="Industries"
+    title="Weighing built for your industry"
+    lede="Every sector has its own capacities, conditions, and compliance needs. We match the right weighing equipment to yours."
+  />
+
+  <Section title="Browse by industry">
+    <IndustryGrid />
+  </Section>
+</BaseLayout>

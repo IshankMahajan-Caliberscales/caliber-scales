@@ -1,0 +1,176 @@
+---
+/**
+ * CaseStudyLayout — case study detail (spec B5). Structured
+ * Challenge / Solution / Result plus MDX body and a soft CTA. Emits Article
+ * JSON-LD. Draft entries are noindexed.
+ */
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import JsonLd from '@components/seo/JsonLd.astro';
+import { articleSchema } from '@lib/schema';
+import { productHref } from '@lib/catalog';
+
+interface Props {
+  entry: CollectionEntry<'caseStudies'>;
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const url = `/resources/case-studies/${entry.id}/`;
+
+const products = await getCollection('products');
+const usedProduct = d.productUsed ? products.find((p) => p.id === d.productUsed) : undefined;
+
+const noindex = d.draft || d.noindex;
+---
+
+<BaseLayout
+  title={d.title}
+  metaTitle={d.metaTitle}
+  description={d.metaDescription}
+  ogImage={d.ogImage ?? d.heroImage}
+  ogType="article"
+  noindex={noindex}
+  crumbs={[
+    { name: 'Resources', href: '/resources/' },
+    { name: 'Case studies', href: '/resources/case-studies/' },
+    { name: d.title, href: url },
+  ]}
+>
+  <article class="cs">
+    <header class="cs-head container-page">
+      <p class="eyebrow">Case study · {d.industry}</p>
+      <h1>{d.title}</h1>
+      <p class="cs-meta">
+        {d.clientName && <span>{d.clientName}</span>}
+        {d.location && <span> · {d.location}</span>}
+        {usedProduct && (
+          <span> · <a href={productHref(usedProduct.data.category, usedProduct.id)}>{usedProduct.data.title}</a></span>
+        )}
+      </p>
+      {d.draft && <p class="draft-banner">🚧 Draft / sample case study — not indexed until finalised and approved.</p>}
+      {d.heroImage && <img class="cs-hero" src={d.heroImage} alt={d.title} width="1200" height="600" />}
+    </header>
+
+    <Section>
+      <div class="cs-grid">
+        <div class="cs-block"><h2>Challenge</h2><p>{d.challenge}</p></div>
+        <div class="cs-block"><h2>Solution</h2><p>{d.solution}</p></div>
+        <div class="cs-block"><h2>Result</h2><p>{d.result}</p></div>
+      </div>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <aside class="soft-cta">
+        <h2>Have a similar requirement?</h2>
+        <p>Tell us about your site and we'll recommend the right weighing solution.</p>
+        <a href="/contact/" class="btn btn-primary">Request a quote</a>
+      </aside>
+    </Section>
+  </article>
+
+  <JsonLd
+    schema={articleSchema({
+      headline: d.title,
+      description: d.metaDescription,
+      image: d.heroImage,
+      author: 'Caliber Scales',
+      url,
+    })}
+  />
+</BaseLayout>
+
+<style>
+  .cs-head {
+    padding-top: 2.5rem;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-accent);
+    margin: 0 0 0.5rem;
+  }
+  .cs-head h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0 0 0.5rem;
+    max-width: 24ch;
+  }
+  .cs-meta {
+    color: var(--color-steel);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+  .draft-banner {
+    margin: 1rem 0 0;
+    padding: 0.65rem 1rem;
+    background: #fff8e1;
+    border: 1px dashed #d4a017;
+    border-radius: var(--radius-card);
+    font-size: 0.88rem;
+    color: #7a5c00;
+  }
+  .cs-hero {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-card);
+    margin-top: 1.5rem;
+  }
+  .cs-grid {
+    display: grid;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+  .cs-block {
+    padding: 1.25rem;
+    background: var(--color-surface);
+    border-radius: var(--radius-card);
+    border-left: 3px solid var(--color-accent);
+  }
+  .cs-block h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+  }
+  .cs-block p {
+    margin: 0;
+    line-height: 1.7;
+  }
+  .prose {
+    max-width: 70ch;
+  }
+  .prose :global(p) {
+    line-height: 1.8;
+    margin: 0 0 1.1rem;
+  }
+  .prose :global(h2) {
+    font-size: 1.4rem;
+    margin: 1.75rem 0 0.75rem;
+  }
+  .soft-cta {
+    margin-top: 2.5rem;
+    padding: 1.5rem;
+    background: var(--color-navy);
+    color: #fff;
+    border-radius: var(--radius-card);
+    max-width: 70ch;
+  }
+  .soft-cta h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+    color: #fff;
+  }
+  .soft-cta p {
+    margin: 0 0 1rem;
+    color: #cdd6e1;
+  }
+  @media (min-width: 760px) {
+    .cs-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

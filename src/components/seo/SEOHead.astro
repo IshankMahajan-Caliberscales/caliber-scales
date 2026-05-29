@@ -1,0 +1,65 @@
+---
+/**
+ * SEOHead — title, meta description, canonical, Open Graph, Twitter, robots.
+ * Used by BaseLayout. One source for all <head> SEO tags (spec B6).
+ */
+import { SITE } from '@lib/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Site-relative path of the current page, e.g. "/about/". */
+  path: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  /** Optional explicit meta title override (else `${title} | ${SITE.name}`). */
+  metaTitle?: string;
+}
+
+const {
+  title,
+  description = SITE.description,
+  path,
+  ogImage = SITE.defaultOgImage,
+  ogType = 'website',
+  noindex = false,
+  metaTitle,
+} = Astro.props;
+
+const fullTitle = metaTitle ?? `${title} | ${SITE.name}`;
+
+// Always emit a trailing-slash canonical (except for files like .xml) so the
+// slash/no-slash variants don't dilute as duplicate URLs.
+const isFile = /\.[a-z0-9]+$/i.test(path);
+const normalizedPath = isFile || path.endsWith('/') ? path : `${path}/`;
+const canonical = new URL(normalizedPath, SITE.url).href;
+const ogImageUrl = new URL(ogImage, SITE.url).href;
+const robots = noindex ? 'noindex, nofollow' : 'index, follow';
+
+// Declare dimensions only for the known-size default banner (per-page custom
+// OG images may differ, so we don't assert a size we can't guarantee).
+const isDefaultOg = ogImage === SITE.defaultOgImage;
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content={robots} />
+
+<!-- Open Graph -->
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImageUrl} />
+{isDefaultOg && <meta property="og:image:width" content="1200" />}
+{isDefaultOg && <meta property="og:image:height" content="630" />}
+<meta property="og:locale" content={SITE.locale} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />

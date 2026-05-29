@@ -1,0 +1,104 @@
+---
+/**
+ * ArticleCard — summary card for blog / guide listings.
+ */
+interface Props {
+  title: string;
+  href: string;
+  excerpt: string;
+  date?: string;
+  image?: string;
+  tag?: string;
+  draft?: boolean;
+}
+
+const { title, href, excerpt, date, image, tag, draft } = Astro.props;
+---
+
+<a href={href} class="art-card">
+  {
+    image && (
+      <span class="art-media">
+        <img src={image} alt="" loading="lazy" width="400" height="225" />
+      </span>
+    )
+  }
+  <span class="art-body">
+    <span class="art-meta">
+      {tag && <span class="art-tag">{tag}</span>}
+      {date && <span>{date}</span>}
+      {draft && <span class="art-draft">Draft</span>}
+    </span>
+    <span class="art-title">{title}</span>
+    <span class="art-excerpt">{excerpt}</span>
+    <span class="art-link" aria-hidden="true">Read more →</span>
+  </span>
+</a>
+
+<style>
+  .art-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #fff;
+    border: 1px solid #e4e9ee;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    text-decoration: none;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .art-card:hover {
+    box-shadow: 0 14px 30px -18px rgba(12, 45, 82, 0.45);
+    transform: translateY(-2px);
+  }
+  .art-media img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+  }
+  .art-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.1rem 1.2rem 1.3rem;
+  }
+  .art-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--color-steel);
+  }
+  .art-tag {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+  .art-draft {
+    background: #fff8e1;
+    color: #7a5c00;
+    border: 1px solid #e7cd7a;
+    border-radius: 999px;
+    padding: 0 0.5rem;
+  }
+  .art-title {
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: var(--color-navy);
+    line-height: 1.3;
+  }
+  .art-excerpt {
+    color: var(--color-steel);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+  .art-link {
+    margin-top: 0.35rem;
+    color: var(--color-accent);
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+</style>

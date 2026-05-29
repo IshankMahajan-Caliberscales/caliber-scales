@@ -1,0 +1,163 @@
+---
+/**
+ * Site header: logo/wordmark, primary Nav, and a "Request quote" CTA.
+ * Mobile menu toggle + submenu accordions handled by the inline script below
+ * (Astro island-free; ~30 lines of vanilla JS for top CWV per B7).
+ */
+import Nav from './Nav.astro';
+import { SITE, telLink, CONTACT } from '@lib/site';
+---
+
+<header class="site-header">
+  <div class="container-page header-inner">
+    <a href="/" class="brand" aria-label={`${SITE.name} — home`}>
+      <img
+        src="/images/brand/caliber-logo.png"
+        alt={SITE.name}
+        class="brand-logo"
+        width="76"
+        height="38"
+        fetchpriority="high"
+      />
+    </a>
+
+    <button
+      type="button"
+      class="menu-toggle"
+      id="menu-toggle"
+      aria-expanded="false"
+      aria-controls="primary-nav"
+    >
+      <span class="sr-only">Menu</span>
+      <span class="menu-bars" aria-hidden="true"></span>
+    </button>
+
+    <div class="nav-wrap" id="nav-wrap">
+      <Nav />
+      <div class="header-cta">
+        <a href={telLink()} class="btn btn-secondary call-link">
+          <span aria-hidden="true">📞</span>
+          <span>{CONTACT.phoneDisplay}</span>
+        </a>
+        <a href="/contact/" class="btn btn-primary">Request quote</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    background: #fff;
+    border-bottom: 1px solid var(--color-surface);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 64px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  .brand-logo {
+    height: 38px;
+    width: auto;
+    display: block;
+  }
+  @media (min-width: 900px) {
+    .brand-logo {
+      height: 42px;
+    }
+  }
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: 1px solid var(--color-surface);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .menu-bars,
+  .menu-bars::before,
+  .menu-bars::after {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--color-navy);
+    position: relative;
+  }
+  .menu-bars::before {
+    position: absolute;
+    top: -6px;
+  }
+  .menu-bars::after {
+    position: absolute;
+    top: 6px;
+  }
+  .nav-wrap {
+    display: none;
+    width: 100%;
+  }
+  .nav-wrap.open {
+    display: block;
+    padding-bottom: 1rem;
+  }
+  .header-cta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  .call-link {
+    font-size: 0.95rem;
+  }
+
+  @media (min-width: 900px) {
+    .menu-toggle {
+      display: none;
+    }
+    .nav-wrap {
+      display: flex !important;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1.5rem;
+      width: auto;
+      flex: 1;
+      padding-bottom: 0;
+    }
+    .header-cta {
+      flex-direction: row;
+      margin-top: 0;
+      align-items: center;
+    }
+  }
+</style>
+
+<script>
+  // Mobile menu toggle
+  const toggle = document.getElementById('menu-toggle');
+  const navWrap = document.getElementById('nav-wrap');
+  toggle?.addEventListener('click', () => {
+    const open = navWrap?.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(Boolean(open)));
+  });
+
+  // Mobile submenu accordions
+  document.querySelectorAll<HTMLButtonElement>('.nav-submenu-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const li = btn.closest('.nav-item');
+      const open = li?.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(Boolean(open)));
+    });
+  });
+</script>

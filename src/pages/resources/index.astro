@@ -1,0 +1,35 @@
+---
+/**
+ * Resources hub (spec B4/B5) — routes to blog, guides, case studies, and FAQs.
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import ProductGrid from '@components/blocks/ProductGrid.astro';
+import type { CategoryCard } from '@lib/catalog';
+
+const cards: CategoryCard[] = [
+  { title: 'Blog', href: '/resources/blog/', blurb: 'Expert articles on weighing, from a manufacturer.' },
+  { title: 'Buying guides', href: '/resources/buying-guides/', blurb: 'How to choose the right weighing equipment.' },
+  { title: 'Installation guides', href: '/resources/installation-guides/', blurb: 'Practical guidance on installation and setup.' },
+  { title: 'Case studies', href: '/resources/case-studies/', blurb: 'Real installations and the results they delivered.' },
+  { title: 'FAQs', href: '/resources/faqs/', blurb: 'Answers to common weighing questions.' },
+];
+---
+
+<BaseLayout
+  title="Resources"
+  metaTitle="Weighing Resources, Guides & Case Studies | Caliber Scales"
+  description="Articles, buying and installation guides, case studies, and FAQs on industrial weighing — from a manufacturer with decades of experience."
+  crumbs={[{ name: 'Resources', href: '/resources/' }]}
+>
+  <Hero
+    eyebrow="Resources"
+    title="Weighing knowledge, from the manufacturer"
+    lede="Guides, articles, case studies, and FAQs to help you choose, install, and maintain the right weighing equipment."
+  />
+
+  <Section title="Explore resources">
+    <ProductGrid items={cards} />
+  </Section>
+</BaseLayout>

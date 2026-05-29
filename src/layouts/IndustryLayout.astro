@@ -1,0 +1,188 @@
+---
+/**
+ * IndustryLayout — industry page (spec B5): intro tying the sector to weighing
+ * needs, pain points, recommended products, related case studies, MDX body,
+ * FAQs (+FAQ schema), and a lead form. Draft entries are noindexed.
+ */
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import ProductGrid from '@components/blocks/ProductGrid.astro';
+import CaseStudyCard from '@components/blocks/CaseStudyCard.astro';
+import FAQAccordion from '@components/blocks/FAQAccordion.astro';
+import LeadForm from '@components/blocks/LeadForm.astro';
+import { productHref, type CategoryCard } from '@lib/catalog';
+
+interface Props {
+  entry: CollectionEntry<'industries'>;
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const url = `/industries/${entry.id}/`;
+
+// Resolve recommended products → cards.
+const products = await getCollection('products');
+const recommended: CategoryCard[] = (d.recommendedProducts ?? [])
+  .map((slug) => products.find((p) => p.id === slug))
+  .filter((p): p is CollectionEntry<'products'> => Boolean(p))
+  .map((p) => ({
+    title: p.data.title,
+    href: productHref(p.data.category, p.id),
+    blurb: p.data.shortDescription,
+  }));
+
+// Resolve related case studies (published only).
+const allCs = await getCollection('caseStudies', ({ data }) => !data.draft);
+const relatedCs = (d.relatedCaseStudies ?? [])
+  .map((slug) => allCs.find((c) => c.id === slug))
+  .filter((c): c is CollectionEntry<'caseStudies'> => Boolean(c));
+
+const noindex = d.draft || d.noindex;
+---
+
+<BaseLayout
+  title={d.name}
+  metaTitle={d.metaTitle}
+  description={d.metaDescription}
+  ogImage={d.ogImage ?? d.heroImage}
+  noindex={noindex}
+  crumbs={[
+    { name: 'Industries', href: '/industries/' },
+    { name: d.name, href: url },
+  ]}
+  ctaHeading={`Weighing solutions for ${d.name.toLowerCase()}`}
+>
+  <Hero title={`Weighing solutions for ${d.name}`} lede={d.intro} image={d.heroImage} imageAlt={d.name} />
+
+  {
+    d.draft && (
+      <div class="draft-banner container-page">
+        🚧 Draft / sample content — not indexed by search engines until finalised.
+      </div>
+    )
+  }
+
+  <Section>
+    <div class="ind-body">
+      <div class="prose">
+        <Content />
+      </div>
+
+      {
+        d.painPoints.length > 0 && (
+          <div class="block">
+            <h2>Common challenges</h2>
+            <ul class="ticks">
+              {d.painPoints.map((p) => <li>{p}</li>)}
+            </ul>
+          </div>
+        )
+      }
+
+      {
+        recommended.length > 0 && (
+          <div class="block">
+            <h2>Recommended products</h2>
+            <ProductGrid items={recommended} />
+          </div>
+        )
+      }
+
+      {
+        relatedCs.length > 0 && (
+          <div class="block">
+            <h2>Related case studies</h2>
+            <div class="cs-grid">
+              {relatedCs.map((c) => (
+                <CaseStudyCard
+                  title={c.data.title}
+                  href={`/resources/case-studies/${c.id}/`}
+                  industry={c.data.industry}
+                  clientName={c.data.clientName}
+                  summary={c.data.result}
+                  image={c.data.heroImage}
+                />
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      {
+        d.faqs.length > 0 && (
+          <div class="block">
+            <h2>Frequently asked questions</h2>
+            <FAQAccordion faqs={d.faqs.map((f) => ({ q: f.q, a: f.a }))} />
+          </div>
+        )
+      }
+    </div>
+  </Section>
+
+  <Section surface>
+    <LeadForm source={`industry:${entry.id}`} heading={`Discuss your ${d.name.toLowerCase()} requirement`} />
+  </Section>
+</BaseLayout>
+
+<style>
+  .draft-banner {
+    margin-top: 1rem;
+    padding: 0.65rem 1rem;
+    background: #fff8e1;
+    border: 1px dashed #d4a017;
+    border-radius: var(--radius-card);
+    font-size: 0.88rem;
+    color: #7a5c00;
+  }
+  .ind-body {
+    display: grid;
+    gap: 2.25rem;
+  }
+  .prose {
+    max-width: 760px;
+  }
+  .prose :global(p) {
+    line-height: 1.75;
+    margin: 0 0 1rem;
+  }
+  .prose :global(h2) {
+    font-size: 1.4rem;
+    margin: 1.75rem 0 0.75rem;
+  }
+  .block h2 {
+    font-size: 1.4rem;
+    margin: 0 0 1rem;
+  }
+  .ticks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+    max-width: 760px;
+  }
+  .ticks li {
+    position: relative;
+    padding-left: 1.6rem;
+  }
+  .ticks li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--color-success);
+    font-weight: 600;
+  }
+  .cs-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  @media (min-width: 700px) {
+    .cs-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

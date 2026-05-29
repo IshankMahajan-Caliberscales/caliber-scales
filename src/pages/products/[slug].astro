@@ -1,0 +1,20 @@
+---
+/**
+ * /products/<slug>/ — detail page for scale/system products (non-weighbridge).
+ * Slug = the product entry id (e.g. "platform-scales"). Draft entries still
+ * render but are noindexed by ProductLayout.
+ */
+import { getCollection, type CollectionEntry } from 'astro:content';
+import ProductLayout from '@layouts/ProductLayout.astro';
+
+export async function getStaticPaths() {
+  const products = await getCollection('products');
+  return products
+    .filter((p) => p.data.category !== 'weighbridge')
+    .map((p) => ({ params: { slug: p.id }, props: { entry: p } }));
+}
+
+const { entry } = Astro.props as { entry: CollectionEntry<'products'> };
+---
+
+<ProductLayout entry={entry} />

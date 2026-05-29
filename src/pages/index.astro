@@ -1,0 +1,156 @@
+---
+/**
+ * Home (spec B5): Hero, TrustBar, ProductGrid, IndustryGrid, "Why Caliber"
+ * FeatureList, ClientLogos (when available), case-study highlights (when
+ * published), and a lead form. Single H1 lives in the Hero.
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import TrustBar from '@components/blocks/TrustBar.astro';
+import ProductGrid from '@components/blocks/ProductGrid.astro';
+import IndustryGrid from '@components/blocks/IndustryGrid.astro';
+import FeatureList from '@components/blocks/FeatureList.astro';
+import ClientLogos from '@components/blocks/ClientLogos.astro';
+import CaseStudyCard from '@components/blocks/CaseStudyCard.astro';
+import LeadForm from '@components/blocks/LeadForm.astro';
+import { SITE, STATS } from '@lib/site';
+import { PRODUCT_CATEGORIES, CLIENTS } from '@lib/catalog';
+
+// Published (non-draft) case studies for the highlights row.
+const caseStudies = (await getCollection('caseStudies', ({ data }) => !data.draft)).slice(0, 3);
+---
+
+<BaseLayout
+  title="Industrial Weighing Solutions"
+  metaTitle={`${SITE.name} — Weighbridge Manufacturer & Industrial Weighing Solutions`}
+  description={SITE.description}
+>
+  <Hero
+    eyebrow={`Manufacturer since ${STATS.foundedYear} · ${STATS.certification}`}
+    title="Industrial weighing solutions, built to last."
+    lede="Weighbridges, platform scales, tank weighing systems and precision balances — engineered, manufactured, installed and serviced across India by Caliber Scales."
+  />
+
+  <TrustBar />
+
+  <Section
+    title="Our products"
+    intro="A full range of industrial weighing equipment, each with dedicated specifications and applications."
+  >
+    <ProductGrid items={PRODUCT_CATEGORIES} />
+  </Section>
+
+  <Section
+    surface
+    title="Industries we serve"
+    intro="Weighing built around the realities of your sector — capacity, conditions, and compliance."
+  >
+    <IndustryGrid />
+  </Section>
+
+  <Section title="Why Caliber Scales">
+    <FeatureList />
+  </Section>
+
+  {
+    CLIENTS.length > 0 && (
+      <Section surface title="Trusted across India" centered>
+        <ClientLogos logos={CLIENTS} />
+      </Section>
+    )
+  }
+
+  {
+    caseStudies.length > 0 && (
+      <Section title="Recent work" intro="Real installations and the results they delivered.">
+        <div class="cs-grid">
+          {caseStudies.map((cs) => (
+            <CaseStudyCard
+              title={cs.data.title}
+              href={`/resources/case-studies/${cs.id}/`}
+              industry={cs.data.industry}
+              clientName={cs.data.clientName}
+              summary={cs.data.result}
+              image={cs.data.heroImage}
+            />
+          ))}
+        </div>
+      </Section>
+    )
+  }
+
+  <Section surface id="quote">
+    <div class="home-quote">
+      <div class="home-quote-copy">
+        <h2>Get a quote from the manufacturer</h2>
+        <p>
+          Speak directly with the team that designs and builds your weighing
+          equipment. Share your requirement and we will recommend the right
+          configuration for your site.
+        </p>
+        <ul class="quote-points">
+          <li>{STATS.installations} installations &amp; {STATS.clients} satisfied clients across {STATS.statesCovered} states &amp; UTs</li>
+          <li>{STATS.certification} certified manufacturer since {STATS.foundedYear}</li>
+          <li>Installation, calibration, and AMC support nationwide</li>
+        </ul>
+      </div>
+      <div class="home-quote-form">
+        <LeadForm source="home" />
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .cs-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .home-quote {
+    display: grid;
+    gap: 2rem;
+  }
+  .home-quote h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin: 0 0 0.75rem;
+  }
+  .home-quote-copy p {
+    color: var(--color-steel);
+    margin: 0 0 1.25rem;
+    max-width: 50ch;
+  }
+  .quote-points {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .quote-points li {
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--color-navy);
+  }
+  .quote-points li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--color-success);
+    font-weight: 600;
+  }
+  @media (min-width: 700px) {
+    .cs-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (min-width: 900px) {
+    .home-quote {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+      gap: 3rem;
+    }
+  }
+</style>

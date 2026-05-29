@@ -1,0 +1,71 @@
+---
+/**
+ * Privacy policy — PLACEHOLDER. Provides the route (footer link + /privacy.php
+ * redirect target) with a clear notice that the final policy needs client/legal
+ * review. No binding legal claims are fabricated.
+ */
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import { CONTACT } from '@lib/site';
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  description="How Caliber Scales India handles your personal information."
+  crumbs={[{ name: 'Privacy', href: '/privacy/' }]}
+  showCTABand={false}
+>
+  <Hero eyebrow="Legal" title="Privacy policy" showCtas={false} />
+
+  <Section>
+    <div class="legal">
+      <p class="placeholder-note">
+        🚧 <strong>Draft placeholder.</strong> This text must be reviewed and
+        approved by the client (and ideally legal counsel) before launch. It is a
+        starting outline, not final policy.
+      </p>
+
+      <h2>What we collect</h2>
+      <p>
+        When you submit an enquiry form, we collect the details you provide
+        (such as name, company, phone, and your requirement) so we can respond.
+      </p>
+
+      <h2>How we use it</h2>
+      <p>
+        We use your information only to respond to your enquiry and provide the
+        products and services you ask about. We do not sell your data.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        For any privacy question, contact us at
+        <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> or
+        <a href={`tel:${CONTACT.phone}`}>{CONTACT.phoneDisplay}</a>.
+      </p>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .legal {
+    max-width: 70ch;
+  }
+  .legal h2 {
+    font-size: 1.2rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .legal p {
+    line-height: 1.7;
+    margin: 0 0 1rem;
+  }
+  .placeholder-note {
+    padding: 0.75rem 1rem;
+    background: var(--color-surface);
+    border: 1px dashed var(--color-steel);
+    border-radius: var(--radius-card);
+    font-size: 0.9rem;
+    color: var(--color-steel);
+  }
+</style>

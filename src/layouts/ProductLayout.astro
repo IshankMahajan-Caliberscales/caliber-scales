@@ -1,0 +1,249 @@
+---
+/**
+ * ProductLayout — full product page (spec B5): hero (image + H1 + CTA above the
+ * fold, so it doubles as a Google Ads landing page), intro, SpecTable,
+ * applications, benefits, ComparisonTable (where defined), gallery, MDX body,
+ * FAQAccordion (+FAQ schema), related products, and a lead form. Emits Product
+ * JSON-LD. Draft entries are noindexed and show a banner.
+ */
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Section from '@components/ui/Section.astro';
+import Hero from '@components/blocks/Hero.astro';
+import SpecTable from '@components/blocks/SpecTable.astro';
+import ComparisonTable from '@components/blocks/ComparisonTable.astro';
+import FAQAccordion from '@components/blocks/FAQAccordion.astro';
+import LeadForm from '@components/blocks/LeadForm.astro';
+import JsonLd from '@components/seo/JsonLd.astro';
+import { productSchema } from '@lib/schema';
+import { productHref } from '@lib/catalog';
+import { COMPARISONS } from '@lib/comparisons';
+
+interface Props {
+  entry: CollectionEntry<'products'>;
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+const url = productHref(d.category, entry.id);
+const isWeighbridge = d.category === 'weighbridge';
+
+const crumbs = isWeighbridge
+  ? [
+      { name: 'Products', href: '/products/' },
+      { name: 'Weighbridges', href: '/weighbridges/' },
+      { name: d.title, href: url },
+    ]
+  : [
+      { name: 'Products', href: '/products/' },
+      { name: d.title, href: url },
+    ];
+
+// Resolve related products to title + href.
+const all = await getCollection('products');
+const related = (d.relatedProducts ?? [])
+  .map((slug) => all.find((p) => p.id === slug))
+  .filter((p): p is CollectionEntry<'products'> => Boolean(p))
+  .map((p) => ({ title: p.data.title, href: productHref(p.data.category, p.id) }));
+
+const comparison = COMPARISONS[entry.id];
+const noindex = d.draft || d.noindex;
+---
+
+<BaseLayout
+  title={d.title}
+  metaTitle={d.metaTitle}
+  description={d.metaDescription}
+  ogImage={d.ogImage ?? d.heroImage}
+  noindex={noindex}
+  crumbs={crumbs}
+  ctaHeading={`Get a quote for the ${d.title.toLowerCase()}`}
+>
+  <Hero title={d.title} lede={d.shortDescription} image={d.heroImage} imageAlt={d.title}>
+    {d.capacityRange && <p class="capacity">Capacity: <strong>{d.capacityRange}</strong></p>}
+  </Hero>
+
+  {
+    d.draft && (
+      <div class="draft-banner container-page">
+        🚧 Draft / sample content — specifications shown are indicative and
+        pending confirmation. This page is not indexed by search engines.
+      </div>
+    )
+  }
+
+  <Section>
+    <div class="product-body">
+      <div class="prose">
+        <Content />
+      </div>
+
+      {
+        d.specifications.length > 0 && (
+          <div class="block">
+            <h2>Specifications</h2>
+            <SpecTable specs={d.specifications} caption={`${d.title} specifications`} />
+          </div>
+        )
+      }
+
+      {
+        d.applications.length > 0 && (
+          <div class="block">
+            <h2>Applications</h2>
+            <ul class="ticks">
+              {d.applications.map((a) => <li>{a}</li>)}
+            </ul>
+          </div>
+        )
+      }
+
+      {
+        d.benefits.length > 0 && (
+          <div class="block">
+            <h2>Benefits</h2>
+            <ul class="ticks">
+              {d.benefits.map((b) => <li>{b}</li>)}
+            </ul>
+          </div>
+        )
+      }
+
+      {
+        comparison && (
+          <div class="block">
+            <h2>Comparison</h2>
+            <ComparisonTable data={comparison} />
+          </div>
+        )
+      }
+
+      {
+        d.gallery.length > 0 && (
+          <div class="block">
+            <h2>Gallery</h2>
+            <div class="gallery">
+              {d.gallery.map((src) => <img src={src} alt={`${d.title} photo`} loading="lazy" />)}
+            </div>
+          </div>
+        )
+      }
+
+      {
+        d.faqs.length > 0 && (
+          <div class="block">
+            <h2>Frequently asked questions</h2>
+            <FAQAccordion faqs={d.faqs.map((f) => ({ q: f.q, a: f.a }))} />
+          </div>
+        )
+      }
+
+      {
+        related.length > 0 && (
+          <div class="block">
+            <h2>Related products</h2>
+            <ul class="related">
+              {related.map((r) => (
+                <li>
+                  <a href={r.href}>{r.title} →</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </Section>
+
+  <Section surface>
+    <LeadForm source={`product:${entry.id}`} heading={`Request a quote — ${d.title}`} />
+  </Section>
+
+  <JsonLd
+    schema={productSchema({
+      name: d.title,
+      description: d.metaDescription,
+      image: d.heroImage,
+      category: d.category,
+      url,
+    })}
+  />
+</BaseLayout>
+
+<style>
+  .capacity {
+    margin: 0.25rem 0 0;
+    color: var(--color-steel);
+  }
+  .draft-banner {
+    margin-top: 1rem;
+    padding: 0.65rem 1rem;
+    background: #fff8e1;
+    border: 1px dashed #d4a017;
+    border-radius: var(--radius-card);
+    font-size: 0.88rem;
+    color: #7a5c00;
+  }
+  .product-body {
+    display: grid;
+    gap: 2.25rem;
+    max-width: 860px;
+  }
+  .prose :global(p) {
+    line-height: 1.75;
+    margin: 0 0 1rem;
+  }
+  .prose :global(h2) {
+    font-size: 1.4rem;
+    margin: 1.75rem 0 0.75rem;
+  }
+  .prose :global(h3) {
+    font-size: 1.15rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .block h2 {
+    font-size: 1.4rem;
+    margin: 0 0 1rem;
+  }
+  .ticks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .ticks li {
+    position: relative;
+    padding-left: 1.6rem;
+  }
+  .ticks li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--color-success);
+    font-weight: 600;
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+  }
+  .gallery img {
+    width: 100%;
+    border-radius: var(--radius-card);
+    border: 1px solid #e4e9ee;
+  }
+  .related {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+  .related a {
+    font-weight: 500;
+  }
+</style>
