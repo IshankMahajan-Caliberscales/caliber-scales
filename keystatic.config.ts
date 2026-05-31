@@ -3,15 +3,36 @@ import { config, fields, collection } from '@keystatic/core';
 /**
  * Keystatic editor (spec B1/B12.2), mounted at /keystatic.
  *
- * Storage is LOCAL for now: editing works against the working tree in
- * `npm run dev`. Before launch, switch to GitHub mode so the client can edit
- * the live site (requires a repo + the Keystatic GitHub app):
- *   storage: { kind: 'github', repo: 'owner/caliber-scales' }
+ * Storage:
+ *   • Development (`npm run dev`)  → LOCAL: edits write straight to the working
+ *     tree, no auth needed.
+ *   • Production (deployed build)  → GITHUB: the admin panel authenticates via
+ *     the Keystatic GitHub App and commits edits to this repo, which triggers a
+ *     redeploy. This is what makes /keystatic a real, hosted admin panel for the
+ *     team (spec B1: "read/write the same content collections via Git").
+ *
+ * To finish enabling GitHub mode on the live site you must (one-time):
+ *   1. Run `npm run dev`, open http://localhost:4321/keystatic, and follow the
+ *      "Set up GitHub" flow — it creates a GitHub App and writes the secrets to
+ *      .env: KEYSTATIC_GITHUB_CLIENT_ID, KEYSTATIC_GITHUB_CLIENT_SECRET,
+ *      KEYSTATIC_SECRET, PUBLIC_KEYSTATIC_GITHUB_APP_SLUG.
+ *   2. Add those same four variables to your host (Vercel → Project → Settings →
+ *      Environment Variables) and redeploy.
+ *   3. In the GitHub App settings, set the callback/homepage URLs to your live
+ *      domain.
  *
  * Each collection writes single MDX files whose filename = slug, matching the
  * Astro Content Layer globs in src/content.config.ts. Images are written into
  * /public so the stored path is a ready-to-use URL string.
  */
+
+// GitHub repository that backs the hosted CMS.
+const GITHUB_REPO = 'vardhan20066-tech/caliber-scales';
+
+// Local in dev (no auth, instant edits); GitHub on the deployed site.
+const storage = import.meta.env.DEV
+  ? ({ kind: 'local' } as const)
+  : ({ kind: 'github', repo: GITHUB_REPO } as const);
 
 const slug = (label = 'Title') =>
   fields.slug({ name: { label, validation: { isRequired: true } } });
@@ -80,7 +101,7 @@ const productRelationships = (label: string) =>
 const body = fields.mdx({ label: 'Body' });
 
 export default config({
-  storage: { kind: 'local' },
+  storage,
   ui: {
     brand: { name: 'Caliber Scales' },
   },
