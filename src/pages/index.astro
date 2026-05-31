@@ -17,6 +17,7 @@ import CaseStudyCard from '@components/blocks/CaseStudyCard.astro';
 import LeadForm from '@components/blocks/LeadForm.astro';
 import { SITE, STATS } from '@lib/site';
 import { PRODUCT_CATEGORIES, CLIENTS } from '@lib/catalog';
+import homepage from '../content/settings/homepage.json';
 
 // Published (non-draft) case studies for the highlights row.
 const caseStudies = (await getCollection('caseStudies', ({ data }) => !data.draft)).slice(0, 3);
@@ -28,11 +29,11 @@ const caseStudies = (await getCollection('caseStudies', ({ data }) => !data.draf
   description={SITE.description}
 >
   <Hero
-    eyebrow={`Manufacturer since ${STATS.foundedYear} · ${STATS.certification}`}
-    title="Industrial weighing solutions, built to last."
-    lede="Weighbridges, platform scales, tank weighing systems and precision balances — engineered, manufactured, installed and serviced across India by Caliber Scales."
-    image="/images/products/pitless-weighbridge.jpg"
-    imageAlt="Caliber Scales electronic weighbridge installed at an industrial site"
+    eyebrow={homepage.heroEyebrow}
+    title={homepage.heroTitle}
+    lede={homepage.heroLede}
+    image={homepage.heroImage}
+    imageAlt={homepage.heroImageAlt}
   />
 
   <TrustBar />

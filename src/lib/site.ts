@@ -1,11 +1,14 @@
 /**
  * Single source of truth for site-wide configuration.
  *
- * ⚠️  PLACEHOLDER VALUES BELOW are marked `TODO`. They must be replaced with
- *     real, client-confirmed data before launch. Nothing here is fabricated as
- *     a final claim — the figures are clearly flagged for confirmation (see the
- *     "Notes to confirm with the client" section of the build spec, and B13).
+ * CONTACT and STATS are loaded from src/content/settings/site.json, which is
+ * editable in the CMS (Keystatic → "Site Settings"). Everything else (brand
+ * identity, navigation) stays in code. `s` below provides safe fallbacks so the
+ * site builds even if a field is blank.
  */
+import settings from '../content/settings/site.json';
+
+const s = settings as Record<string, string>;
 
 export interface NavItem {
   label: string;
@@ -29,46 +32,39 @@ export const SITE = {
 } as const;
 
 /**
- * Contact details. PLACEHOLDERS — confirm with client (A10 / B-notes).
- * The postal address is taken verbatim from the spec (B6) and is treated as real.
+ * Contact details — edited via the CMS (Site Settings). The country code stays
+ * fixed in code; everything else comes from site.json.
  */
 export const CONTACT = {
-  /** Real address from spec B6. */
   address: {
-    streetAddress: '303, 3rd Floor, Satya Mansion, Ranjit Nagar Commercial Complex',
-    addressLocality: 'New Delhi',
-    addressRegion: 'Delhi',
-    postalCode: '110008',
+    streetAddress: s.addressStreet,
+    addressLocality: s.addressLocality,
+    addressRegion: s.addressRegion,
+    postalCode: s.addressPostalCode,
     addressCountry: 'IN',
   },
-  /** Confirmed by client. Used for tel: links + schema. */
-  phone: '+91-9811156814',
-  phoneDisplay: '+91 98111 56814',
-  /** Confirmed by client. Digits only, country code, no +. */
-  whatsapp: '919811156814',
-  /** Confirmed by client. */
-  email: 'info@caliberscales.com',
-  /** TODO: confirm/replace with the embed from the current site. */
-  mapsEmbedUrl: '',
-} as const;
+  /** Used for tel: links + schema. */
+  phone: s.phone,
+  phoneDisplay: s.phoneDisplay,
+  /** Digits only, country code, no +. */
+  whatsapp: s.whatsapp,
+  email: s.email,
+  /** Optional Google Maps embed URL. */
+  mapsEmbedUrl: s.mapsEmbedUrl ?? '',
+};
 
 /**
- * Trust / credibility stats shown in the TrustBar and Organization schema.
- * PLACEHOLDERS flagged where the spec itself flags a discrepancy (e.g. "21 years"
- * vs founded 2001). Confirm exact figures with the client before launch.
+ * Trust / credibility stats shown in the TrustBar and Organization schema —
+ * edited via the CMS (Site Settings).
  */
 export const STATS = {
-  foundedYear: 2001, // from spec A1 ("manufacturer since 2001")
-  /** Confirmed by client (matches brand banner). */
-  yearsInBusiness: '25+',
-  /** Confirmed by client. */
-  installations: '5,000+',
-  /** Confirmed by client (brand banner). */
-  clients: '1,000+',
-  /** Confirmed by client: 25+ states & Union Territories of India. */
-  statesCovered: '25+',
-  certification: 'ISO 9001:2015',
-} as const;
+  foundedYear: s.foundedYear,
+  yearsInBusiness: s.yearsInBusiness,
+  installations: s.installations,
+  clients: s.clients,
+  statesCovered: s.statesCovered,
+  certification: s.certification,
+};
 
 export const SOCIAL: { label: string; href: string }[] = [
   // TODO: add real, confirmed social profile URLs (used in sameAs schema).

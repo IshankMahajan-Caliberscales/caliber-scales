@@ -1,4 +1,4 @@
-import { config, fields, collection } from '@keystatic/core';
+import { config, fields, collection, singleton } from '@keystatic/core';
 import { createElement } from 'react';
 
 /**
@@ -127,7 +127,76 @@ export default config({
       Products: ['products'],
       'Industries & Services': ['industries', 'services'],
       Resources: ['blog', 'caseStudies', 'faqs'],
+      Settings: ['homepage', 'settings'],
     },
+  },
+  singletons: {
+    homepage: singleton({
+      label: 'Homepage',
+      path: 'src/content/settings/homepage',
+      format: { data: 'json' },
+      schema: {
+        heroEyebrow: fields.text({
+          label: 'Hero — eyebrow',
+          description: 'Small line above the headline.',
+        }),
+        heroTitle: fields.text({
+          label: 'Hero — headline (H1)',
+          validation: { isRequired: true },
+        }),
+        heroLede: fields.text({
+          label: 'Hero — sub-text',
+          multiline: true,
+          validation: { isRequired: true },
+        }),
+        heroImage: fields.image({
+          label: 'Hero — image',
+          directory: 'public/images/home',
+          publicPath: '/images/home/',
+        }),
+        heroImageAlt: fields.text({
+          label: 'Hero — image alt text',
+          description: 'Describes the image for accessibility and SEO.',
+        }),
+      },
+    }),
+    settings: singleton({
+      label: 'Site Settings',
+      path: 'src/content/settings/site',
+      format: { data: 'json' },
+      schema: {
+        phone: fields.text({
+          label: 'Phone — for tel: links',
+          description: 'Full number with country code, e.g. +91-9811156814',
+          validation: { isRequired: true },
+        }),
+        phoneDisplay: fields.text({
+          label: 'Phone — display format',
+          description: 'How the number is shown on the site, e.g. +91 98111 56814',
+          validation: { isRequired: true },
+        }),
+        whatsapp: fields.text({
+          label: 'WhatsApp number',
+          description: 'Digits only with country code, no + or spaces, e.g. 919811156814',
+          validation: { isRequired: true },
+        }),
+        email: fields.text({ label: 'Email', validation: { isRequired: true } }),
+        addressStreet: fields.text({ label: 'Address — street', validation: { isRequired: true } }),
+        addressLocality: fields.text({ label: 'Address — city', validation: { isRequired: true } }),
+        addressRegion: fields.text({ label: 'Address — state / region', validation: { isRequired: true } }),
+        addressPostalCode: fields.text({ label: 'Address — postal code', validation: { isRequired: true } }),
+        mapsEmbedUrl: fields.text({
+          label: 'Google Maps embed URL (optional)',
+          description: 'The src URL from a Google Maps "Embed a map" iframe. Shown on the Contact page.',
+        }),
+        foundedYear: fields.text({ label: 'Founded year', validation: { isRequired: true } }),
+        yearsInBusiness: fields.text({ label: 'Years in business', description: 'e.g. 25+' }),
+        installations: fields.text({ label: 'Installations', description: 'e.g. 5,000+' }),
+        clients: fields.text({ label: 'Satisfied clients', description: 'e.g. 1,000+' }),
+        statesCovered: fields.text({ label: 'States & UTs covered', description: 'e.g. 25+' }),
+        certification: fields.text({ label: 'Certification', description: 'e.g. ISO 9001:2015' }),
+      },
+    }),
   },
   collections: {
     products: collection({
