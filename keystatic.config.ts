@@ -122,6 +122,12 @@ export default config({
           style: { display: 'block' },
         }),
     },
+    // Group the sidebar into clear sections instead of one flat list.
+    navigation: {
+      Products: ['products'],
+      'Industries & Services': ['industries', 'services'],
+      Resources: ['blog', 'caseStudies', 'faqs'],
+    },
   },
   collections: {
     products: collection({
