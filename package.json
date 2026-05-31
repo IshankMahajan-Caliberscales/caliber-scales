@@ -19,7 +19,6 @@
     "@astrojs/vercel": "^10.0.8",
     "@keystatic/astro": "^5.1.0",
     "@keystatic/core": "^0.5.50",
-    "@tailwindcss/vite": "^4.3.0",
     "astro": "^6.4.2",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
@@ -28,5 +27,8 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.0"
+  },
+  "overrides": {
+    "vite": "7.3.3"
   }
 }
