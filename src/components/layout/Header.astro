@@ -86,6 +86,14 @@ import { SITE, telLink, CONTACT } from '@lib/site';
     border-radius: 6px;
     cursor: pointer;
   }
+  /* While the mobile menu is open, drop the logo and keep the close button
+     anchored to the right (the menu panel wraps onto its own line below). */
+  .site-header.menu-open .brand {
+    display: none;
+  }
+  .site-header.menu-open .menu-toggle {
+    margin-left: auto;
+  }
   .menu-bars,
   .menu-bars::before,
   .menu-bars::after {
@@ -95,6 +103,7 @@ import { SITE, telLink, CONTACT } from '@lib/site';
     height: 2px;
     background: var(--color-navy);
     position: relative;
+    transition: transform 0.2s ease, background-color 0.2s ease, top 0.2s ease;
   }
   .menu-bars::before {
     position: absolute;
@@ -104,19 +113,49 @@ import { SITE, telLink, CONTACT } from '@lib/site';
     position: absolute;
     top: 6px;
   }
+  /* Morph the bars into an X while the menu is open. */
+  .menu-toggle[aria-expanded='true'] .menu-bars {
+    background: transparent;
+  }
+  .menu-toggle[aria-expanded='true'] .menu-bars::before {
+    top: 0;
+    transform: rotate(45deg);
+  }
+  .menu-toggle[aria-expanded='true'] .menu-bars::after {
+    top: 0;
+    transform: rotate(-45deg);
+  }
   .nav-wrap {
     display: none;
     width: 100%;
   }
   .nav-wrap.open {
     display: block;
-    padding-bottom: 1rem;
+    margin-top: 0.5rem;
+    padding-bottom: 0.75rem;
+    border-top: 1px solid var(--color-surface);
+    animation: navReveal 0.18s ease-out;
+  }
+  @keyframes navReveal {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   .header-cta {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
+    gap: 0.6rem;
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--color-surface);
+  }
+  .header-cta .btn {
+    width: 100%;
   }
   .call-link {
     font-size: 0.95rem;
@@ -126,6 +165,10 @@ import { SITE, telLink, CONTACT } from '@lib/site';
     .menu-toggle {
       display: none;
     }
+    /* The logo always shows on desktop, regardless of any leftover open state. */
+    .site-header.menu-open .brand {
+      display: inline-flex;
+    }
     .nav-wrap {
       display: flex !important;
       align-items: center;
@@ -133,31 +176,51 @@ import { SITE, telLink, CONTACT } from '@lib/site';
       gap: 1.5rem;
       width: auto;
       flex: 1;
+      margin-top: 0;
       padding-bottom: 0;
+      border-top: 0;
     }
     .header-cta {
       flex-direction: row;
       margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
       align-items: center;
+    }
+    .header-cta .btn {
+      width: auto;
     }
   }
 </style>
 
-<script>
-  // Mobile menu toggle
-  const toggle = document.getElementById('menu-toggle');
-  const navWrap = document.getElementById('nav-wrap');
-  toggle?.addEventListener('click', () => {
-    const open = navWrap?.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', String(Boolean(open)));
-  });
+<!--
+  Inlined (is:inline) on purpose: keeps this tiny menu logic out of the JS
+  bundler. @astrojs/react's dev Fast-Refresh wrapper + rolldown-vite throws
+  "Missing field moduleType" when transforming hoisted client scripts, which
+  500s them and silently breaks the mobile menu. Plain inline JS sidesteps it.
+-->
+<script is:inline>
+  (function () {
+    // Mobile menu toggle
+    var toggle = document.getElementById('menu-toggle');
+    var navWrap = document.getElementById('nav-wrap');
+    var header = document.querySelector('.site-header');
+    if (toggle && navWrap) {
+      toggle.addEventListener('click', function () {
+        var open = navWrap.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', String(open));
+        // Hide the logo while the menu panel is open (mobile only — see CSS).
+        if (header) header.classList.toggle('menu-open', open);
+      });
+    }
 
-  // Mobile submenu accordions
-  document.querySelectorAll<HTMLButtonElement>('.nav-submenu-toggle').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const li = btn.closest('.nav-item');
-      const open = li?.classList.toggle('open');
-      btn.setAttribute('aria-expanded', String(Boolean(open)));
+    // Mobile submenu accordions
+    document.querySelectorAll('.nav-submenu-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var li = btn.closest('.nav-item');
+        var open = li ? li.classList.toggle('open') : false;
+        btn.setAttribute('aria-expanded', String(open));
+      });
     });
-  });
+  })();
 </script>

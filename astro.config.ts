@@ -20,6 +20,13 @@ export default defineConfig({
   site: SITE.url,
   output: 'static',
   adapter: vercel(),
+  // Allow temporary public preview tunnels (e.g. Cloudflare trycloudflare.com)
+  // to reach the dev server when sharing a review link. Harmless for local dev.
+  vite: {
+    server: {
+      allowedHosts: true,
+    },
+  },
   // trailingSlash left at the default ('ignore'): both /about and /about/
   // resolve. We DON'T force 'always' because Keystatic's client calls
   // /api/keystatic/... without a trailing slash and 'always' would 404 it.
@@ -40,6 +47,10 @@ export default defineConfig({
   // 301 redirects from the legacy .php site (B14). Astro emits these through
   // the Vercel adapter as host-level redirects.
   redirects: {
+    // Weighbridge category renames (kept names → new URLs).
+    '/weighbridges/pitless/': '/weighbridges/surface-mounted/',
+    '/weighbridges/pit-mounted/': '/weighbridges/pit-type/',
+    // Legacy .php site (B14).
     '/electronic-weighbridge.php': '/weighbridges/',
     '/customized-weighing-systems.php': '/products/tank-weighing-systems/',
     '/platform-scale.php': '/products/platform-scales/',

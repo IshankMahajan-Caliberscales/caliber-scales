@@ -14,7 +14,7 @@ export interface Comparison {
  */
 const PITLESS_VS_PITMOUNTED: Comparison = {
   intro: 'How the two most common weighbridge designs compare at a glance.',
-  columns: ['Pitless', 'Pit-mounted'],
+  columns: ['Surface mounted', 'Pit type'],
   rows: [
     { feature: 'Installation', values: ['Above ground on ramps — no excavation', 'Set flush into an excavated pit'] },
     { feature: 'Civil work', values: ['Lower — raised foundation only', 'Higher — pit excavation + drainage'] },
@@ -26,6 +26,6 @@ const PITLESS_VS_PITMOUNTED: Comparison = {
 };
 
 export const COMPARISONS: Record<string, Comparison> = {
-  pitless: PITLESS_VS_PITMOUNTED,
-  'pit-mounted': PITLESS_VS_PITMOUNTED,
+  'surface-mounted': PITLESS_VS_PITMOUNTED,
+  'pit-type': PITLESS_VS_PITMOUNTED,
 };

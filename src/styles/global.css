@@ -28,8 +28,8 @@
   --radius-card: 8px;
   --radius-btn: 6px;
 
-  /* Layout */
-  --spacing-container: 1200px;
+  /* Layout — wider, sleeker content area (less empty gutter on large screens). */
+  --spacing-container: 1340px;
 }
 
 /* Self-host Inter (two weights) for performance + no layout shift (spec B7).
@@ -98,7 +98,9 @@
     width: 100%;
     max-width: var(--spacing-container);
     margin-inline: auto;
-    padding-inline: 1rem;
+    /* Scales from a tight 1rem on phones to a comfortable 1.5rem on desktop,
+       so content sits closer to the edges (sleeker, less side whitespace). */
+    padding-inline: clamp(1rem, 2vw, 1.5rem);
   }
 
   /* Consistent, strong CTA styling (B9). */

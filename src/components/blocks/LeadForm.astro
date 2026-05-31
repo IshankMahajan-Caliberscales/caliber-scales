@@ -134,52 +134,62 @@ const {
   }
 </style>
 
-<script>
-  document.querySelectorAll<HTMLFormElement>('form.lead-form').forEach((form) => {
-    const status = form.querySelector<HTMLParagraphElement>('.lead-status');
-    const submit = form.querySelector<HTMLButtonElement>('.lead-submit');
+<!--
+  is:inline on purpose — see Header.astro: hoisted client scripts currently 500
+  under @astrojs/react's dev Fast-Refresh wrapper + rolldown-vite. The per-form
+  `bound` guard keeps this idempotent if a page renders more than one LeadForm.
+-->
+<script is:inline>
+  (function () {
+    document.querySelectorAll('form.lead-form').forEach(function (form) {
+      if (form.dataset.bound) return;
+      form.dataset.bound = '1';
 
-    const setStatus = (msg: string, kind: 'success' | 'error') => {
-      if (!status) return;
-      status.textContent = msg;
-      status.hidden = false;
-      status.classList.remove('is-success', 'is-error');
-      status.classList.add(kind === 'success' ? 'is-success' : 'is-error');
-    };
+      var status = form.querySelector('.lead-status');
+      var submit = form.querySelector('.lead-submit');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!form.reportValidity()) return;
-
-      const payload = Object.fromEntries(new FormData(form).entries());
-      submit?.setAttribute('disabled', 'true');
-      const original = submit?.textContent;
-      if (submit) submit.textContent = 'Sending…';
-
-      try {
-        const res = await fetch('/api/lead', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json().catch(() => ({}));
-
-        if (res.ok && data.ok) {
-          setStatus(data.message || 'Thank you — we will be in touch shortly.', 'success');
-          form.reset();
-          // GA4 conversion hook (wired in Phase 8).
-          (window as any).dataLayer?.push?.({ event: 'lead_submit' });
-        } else if (res.status === 429) {
-          setStatus('Too many attempts. Please try again in a minute.', 'error');
-        } else {
-          setStatus('Sorry, something went wrong. Please call or WhatsApp us instead.', 'error');
-        }
-      } catch {
-        setStatus('Network error. Please check your connection or call us directly.', 'error');
-      } finally {
-        submit?.removeAttribute('disabled');
-        if (submit && original) submit.textContent = original;
+      function setStatus(msg, kind) {
+        if (!status) return;
+        status.textContent = msg;
+        status.hidden = false;
+        status.classList.remove('is-success', 'is-error');
+        status.classList.add(kind === 'success' ? 'is-success' : 'is-error');
       }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        if (!form.reportValidity()) return;
+
+        var payload = Object.fromEntries(new FormData(form).entries());
+        if (submit) submit.setAttribute('disabled', 'true');
+        var original = submit ? submit.textContent : '';
+        if (submit) submit.textContent = 'Sending…';
+
+        try {
+          var res = await fetch('/api/lead', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          var data = await res.json().catch(function () { return {}; });
+
+          if (res.ok && data.ok) {
+            setStatus(data.message || 'Thank you — we will be in touch shortly.', 'success');
+            form.reset();
+            // GA4 conversion hook (wired in Phase 8).
+            if (window.dataLayer && window.dataLayer.push) window.dataLayer.push({ event: 'lead_submit' });
+          } else if (res.status === 429) {
+            setStatus('Too many attempts. Please try again in a minute.', 'error');
+          } else {
+            setStatus('Sorry, something went wrong. Please call or WhatsApp us instead.', 'error');
+          }
+        } catch (err) {
+          setStatus('Network error. Please check your connection or call us directly.', 'error');
+        } finally {
+          if (submit) submit.removeAttribute('disabled');
+          if (submit && original) submit.textContent = original;
+        }
+      });
     });
-  });
+  })();
 </script>
