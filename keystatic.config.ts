@@ -1,4 +1,5 @@
 import { config, fields, collection } from '@keystatic/core';
+import { createElement } from 'react';
 
 /**
  * Keystatic editor (spec B1/B12.2), mounted at /keystatic.
@@ -109,7 +110,18 @@ const body = fields.mdx({ label: 'Body' });
 export default config({
   storage,
   ui: {
-    brand: { name: 'Caliber Scales' },
+    // Brand the editor with the Caliber logo. `mark` is the logo image; the
+    // name reads "[logo] CMS" to avoid repeating the wordmark in the logo.
+    brand: {
+      name: 'CMS',
+      mark: () =>
+        createElement('img', {
+          src: '/images/brand/caliber-logo.png',
+          alt: 'Caliber Scales',
+          height: 22,
+          style: { display: 'block' },
+        }),
+    },
   },
   collections: {
     products: collection({
