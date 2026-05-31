@@ -29,10 +29,16 @@ import { config, fields, collection } from '@keystatic/core';
 // GitHub repository that backs the hosted CMS.
 const GITHUB_REPO = 'vardhan20066-tech/caliber-scales';
 
-// Local in dev (no auth, instant edits); GitHub on the deployed site.
-const storage = import.meta.env.DEV
-  ? ({ kind: 'local' } as const)
-  : ({ kind: 'github', repo: GITHUB_REPO } as const);
+// Storage mode:
+//   • Deployed build → always GitHub (the hosted admin panel).
+//   • Local dev      → local by default (no auth, instant edits). To run the
+//     one-time "Set up GitHub" wizard locally, start dev with
+//     PUBLIC_KEYSTATIC_GITHUB=true so this resolves to GitHub mode.
+const useGitHub =
+  import.meta.env.PROD || import.meta.env.PUBLIC_KEYSTATIC_GITHUB === 'true';
+const storage = useGitHub
+  ? ({ kind: 'github', repo: GITHUB_REPO } as const)
+  : ({ kind: 'local' } as const);
 
 const slug = (label = 'Title') =>
   fields.slug({ name: { label, validation: { isRequired: true } } });

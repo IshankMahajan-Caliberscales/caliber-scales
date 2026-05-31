@@ -42,10 +42,13 @@ just a Git commit.
 
 ### One-time setup to enable the hosted admin panel
 
-1. Run `npm run dev`, open `/keystatic`, and complete the **"Set up GitHub"**
-   flow. Keystatic creates a GitHub App and writes four secrets to `.env`:
-   `KEYSTATIC_GITHUB_CLIENT_ID`, `KEYSTATIC_GITHUB_CLIENT_SECRET`,
-   `KEYSTATIC_SECRET`, `PUBLIC_KEYSTATIC_GITHUB_APP_SLUG`.
+1. Start dev in GitHub mode so the setup wizard appears:
+   `PUBLIC_KEYSTATIC_GITHUB=true npm run dev` (PowerShell:
+   `$env:PUBLIC_KEYSTATIC_GITHUB="true"; npm run dev`). Open `/keystatic` and
+   complete the **"Set up GitHub"** flow. Keystatic creates a GitHub App and
+   writes four secrets to `.env`: `KEYSTATIC_GITHUB_CLIENT_ID`,
+   `KEYSTATIC_GITHUB_CLIENT_SECRET`, `KEYSTATIC_SECRET`,
+   `PUBLIC_KEYSTATIC_GITHUB_APP_SLUG`. (Plain `npm run dev` stays in local mode.)
 2. Add those same four variables in **Vercel → Project → Settings → Environment
    Variables**, then redeploy.
 3. In the GitHub App's settings, set the homepage/callback URLs to your live
