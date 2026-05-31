@@ -1,0 +1,24 @@
+{
+  "logos": [
+    { "name": "Larsen & Toubro", "logo": "larsen-toubro.png" },
+    { "name": "Shapoorji Pallonji", "logo": "shapoorji-pallonji.png" },
+    { "name": "Godrej Properties", "logo": "godrej-properties.png" },
+    { "name": "JSW", "logo": "jsw.png" },
+    { "name": "Nagarjuna Construction Company (NCC)", "logo": "ncc.png" },
+    { "name": "Afcons Infrastructure", "logo": "afcons.png" },
+    { "name": "Food Corporation of India", "logo": "food-corporation-of-india.jpg" },
+    { "name": "Delhi Metro (DMRC)", "logo": "delhi-metro.png" },
+    { "name": "Star Cement", "logo": "star-cement.png" },
+    { "name": "Topcem Cement", "logo": "topcem-cement.png" },
+    { "name": "Ansal Buildwell", "logo": "ansal-buildwell.png" },
+    { "name": "Ashiana Housing", "logo": "ashiana-housing.png" },
+    { "name": "Earth Infrastructures", "logo": "earth-infrastructures.png" },
+    { "name": "ASK Automotive", "logo": "ask-automotive.png" },
+    { "name": "Sansera Engineering", "logo": "sansera-engineering.png" },
+    { "name": "Meneta Group", "logo": "meneta-group.png" },
+    { "name": "Surya", "logo": "surya.png" },
+    { "name": "Rama Ply", "logo": "rama-ply.png" },
+    { "name": "Consort", "logo": "consort.png" },
+    { "name": "Chaayos", "logo": "chaayos.png" }
+  ]
+}

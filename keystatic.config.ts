@@ -127,10 +127,33 @@ export default config({
       Products: ['products'],
       'Industries & Services': ['industries', 'services'],
       Resources: ['blog', 'caseStudies', 'faqs'],
-      Settings: ['homepage', 'settings'],
+      Settings: ['homepage', 'clients', 'settings'],
     },
   },
   singletons: {
+    clients: singleton({
+      label: 'Client Logos',
+      path: 'src/content/settings/clients',
+      format: { data: 'json' },
+      schema: {
+        logos: fields.array(
+          fields.object({
+            name: fields.text({ label: 'Client name', validation: { isRequired: true } }),
+            logo: fields.image({
+              label: 'Logo',
+              directory: 'public/images/clients',
+              publicPath: '/images/clients/',
+              validation: { isRequired: true },
+            }),
+          }),
+          {
+            label: 'Client logos',
+            description: 'Shown in the "Trusted across India" strip on the homepage. Drag to reorder.',
+            itemLabel: (p) => p.fields.name.value || 'Logo',
+          }
+        ),
+      },
+    }),
     homepage: singleton({
       label: 'Homepage',
       path: 'src/content/settings/homepage',

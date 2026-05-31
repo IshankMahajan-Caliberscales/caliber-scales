@@ -16,11 +16,19 @@ import ClientLogos from '@components/blocks/ClientLogos.astro';
 import CaseStudyCard from '@components/blocks/CaseStudyCard.astro';
 import LeadForm from '@components/blocks/LeadForm.astro';
 import { SITE, STATS } from '@lib/site';
-import { PRODUCT_CATEGORIES, CLIENTS } from '@lib/catalog';
+import { PRODUCT_CATEGORIES } from '@lib/catalog';
 import homepage from '../content/settings/homepage.json';
+import clientsData from '../content/settings/clients.json';
 
 // Published (non-draft) case studies for the highlights row.
 const caseStudies = (await getCollection('caseStudies', ({ data }) => !data.draft)).slice(0, 3);
+
+// Client logos (editable in the CMS → Client Logos). Keystatic stores the image
+// filename, so prepend the public path unless an absolute path is already set.
+const CLIENTS = clientsData.logos.map((c) => ({
+  name: c.name,
+  src: c.logo.startsWith('/') ? c.logo : `/images/clients/${c.logo}`,
+}));
 ---
 
 <BaseLayout
