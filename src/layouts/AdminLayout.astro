@@ -1,0 +1,120 @@
+---
+/**
+ * AdminLayout — chrome for the custom /admin panel. Deliberately separate from
+ * the public BaseLayout: no marketing nav/footer, always noindex, minimal CSS.
+ */
+interface Props {
+  title: string;
+  /** Show the top bar with logout (false on the login screen). */
+  authed?: boolean;
+  email?: string;
+}
+const { title, authed = false, email } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} · Caliber Scales Admin</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    {
+      authed && (
+        <header class="admin-bar">
+          <div class="admin-bar-inner">
+            <a href="/admin/" class="admin-brand">
+              <img src="/images/brand/caliber-logo.png" alt="Caliber Scales" height="26" />
+              <span>Admin</span>
+            </a>
+            <nav class="admin-nav">
+              <a href="/admin/">Dashboard</a>
+              <a href="/keystatic" target="_blank" rel="noopener">Content ↗</a>
+              {email && <span class="admin-user">{email}</span>}
+              <a href="/api/admin/logout" class="admin-logout">Log out</a>
+            </nav>
+          </div>
+        </header>
+      )
+    }
+    <main class="admin-main">
+      <slot />
+    </main>
+
+    <style is:global>
+      :root {
+        --navy: #0c2d52;
+        --navy-600: #16467f;
+        --accent: #1e73be;
+        --steel: #5f6b7a;
+        --surface: #f4f6f8;
+        --line: #e4e9ee;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+        color: #1a2433;
+        background: var(--surface);
+        line-height: 1.5;
+      }
+      a { color: var(--accent); }
+      .admin-bar {
+        background: var(--navy);
+        color: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .admin-bar-inner {
+        max-width: 1100px;
+        margin-inline: auto;
+        padding: 0.6rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .admin-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .admin-brand img {
+        background: #fff;
+        padding: 3px 6px;
+        border-radius: 5px;
+      }
+      .admin-nav {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+      }
+      .admin-nav a { color: #cdd6e1; text-decoration: none; }
+      .admin-nav a:hover { color: #fff; }
+      .admin-user { color: #9fb0c4; font-size: 0.82rem; }
+      .admin-logout {
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0.25rem 0.7rem;
+        border-radius: 6px;
+      }
+      .admin-main {
+        max-width: 1100px;
+        margin-inline: auto;
+        padding: 1.5rem 1rem 3rem;
+      }
+      @media (max-width: 560px) {
+        .admin-bar-inner { flex-direction: column; align-items: flex-start; }
+      }
+    </style>
+  </body>
+</html>

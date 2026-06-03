@@ -28,7 +28,28 @@ All site-wide values (contact details, stats, navigation) live in
 awaiting client confirmation** — replace before launch. Nothing is presented
 as a finalised claim until confirmed.
 
-## Admin panel / CMS (Keystatic)
+## Custom admin panel (`/admin`)
+
+A custom marketing panel with **email/password login** lives at **`/admin`**
+(separate from the content editor). It's the home for the dashboard (leads,
+traffic, Google Ads, search rankings) — the data sections light up once the site
+is deployed and the Google accounts are connected.
+
+**Configure the login** (server secrets — see `.env.example`):
+
+- `AUTH_SECRET` — signs the session cookie (any long random string).
+- `ADMIN_EMAIL` — the admin's email.
+- `ADMIN_PASSWORD_HASH` — a scrypt hash, **never** the plain password. Generate:
+  ```bash
+  node -e "const c=require('crypto');const p='YOUR_PASSWORD';const s=c.randomBytes(16).toString('hex');console.log(s+':'+c.scryptSync(p,s,64).toString('hex'))"
+  ```
+
+Set these in `.env` locally and in the host's environment variables for
+production. Auth is intentionally minimal (one admin, stateless signed-cookie
+session, no database) — fine for a single marketing user; move to a proper auth
+provider if you later need multiple users/roles.
+
+## Content editor / CMS (Keystatic)
 
 The content editor lives at **`/keystatic`**. Content is stored as MDX in
 `src/content/` (no database), so editors get a friendly UI and every change is

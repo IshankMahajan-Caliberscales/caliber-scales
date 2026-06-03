@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
@@ -20,6 +20,16 @@ export default defineConfig({
   site: SITE.url,
   output: 'static',
   adapter: vercel(),
+  // Typed env (astro:env). Server secrets power the custom /admin login; the
+  // GA4 id is public (client). All optional so the build never fails when unset.
+  env: {
+    schema: {
+      AUTH_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
+      ADMIN_EMAIL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      ADMIN_PASSWORD_HASH: envField.string({ context: 'server', access: 'secret', optional: true }),
+      PUBLIC_GA4_ID: envField.string({ context: 'client', access: 'public', optional: true }),
+    },
+  },
   // Allow temporary public preview tunnels (e.g. Cloudflare trycloudflare.com)
   // to reach the dev server when sharing a review link. Harmless for local dev.
   vite: {

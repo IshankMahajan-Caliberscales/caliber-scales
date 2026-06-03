@@ -1,0 +1,139 @@
+---
+/**
+ * /admin — the dashboard. Protected: redirects to /admin/login without a valid
+ * session. This is the SHELL — each section shows its status and gets wired to
+ * live data after deploy (leads datastore, GA4, Google Ads, Search Console, or
+ * embedded Looker Studio dashboards).
+ */
+export const prerender = false;
+
+import AdminLayout from '@layouts/AdminLayout.astro';
+import { SESSION_COOKIE, verifySessionToken } from '@lib/auth';
+
+const session = verifySessionToken(Astro.cookies.get(SESSION_COOKIE)?.value);
+if (!session) return Astro.redirect('/admin/login/');
+
+const cards = [
+  {
+    title: 'Leads',
+    desc: 'Enquiries from the website forms, with name, phone, and requirement.',
+    status: 'Needs a datastore + deploy',
+    note: 'Form submissions currently log server-side. Add a lead store (e.g. Google Sheet / KV) on deploy to see them here.',
+  },
+  {
+    title: 'Website traffic',
+    desc: 'Visitors, top pages, and sources from Google Analytics (GA4).',
+    status: 'Connect GA4 after deploy',
+    note: 'Add your GA4 property + embed a Looker Studio report here.',
+  },
+  {
+    title: 'Google Ads',
+    desc: 'Spend, clicks, conversions, and cost-per-lead from your Ads account.',
+    status: 'Connect Google Ads after deploy',
+    note: 'Conversion tracking gets wired into the site; performance shown via an embedded Looker Studio report.',
+  },
+  {
+    title: 'Search rankings (SEO)',
+    desc: 'Impressions, clicks, and queries from Google Search Console.',
+    status: 'Connect Search Console after deploy',
+    note: 'Verify the property on launch, then embed the report here.',
+  },
+];
+---
+
+<AdminLayout title="Dashboard" authed={true} email={session.email}>
+  <h1 class="dash-h1">Dashboard</h1>
+  <p class="dash-sub">Welcome back. This is your marketing control panel for Caliber Scales.</p>
+
+  <div class="dash-banner">
+    🚧 <strong>Preview build.</strong> The login and panel work now. The data
+    sections below light up once the site is <strong>deployed</strong> and your
+    Google accounts (Analytics, Ads, Search Console) are connected — there's no
+    traffic or ad data to show yet.
+  </div>
+
+  <section class="dash-grid">
+    {
+      cards.map((c) => (
+        <article class="dash-card">
+          <h2>{c.title}</h2>
+          <p class="dash-card-desc">{c.desc}</p>
+          <span class="dash-pill">{c.status}</span>
+          <p class="dash-card-note">{c.note}</p>
+        </article>
+      ))
+    }
+  </section>
+
+  <section class="dash-quick">
+    <h2>Quick actions</h2>
+    <div class="dash-actions">
+      <a href="/keystatic" target="_blank" rel="noopener" class="dash-action">
+        ✏️ Edit website content
+        <span>Products, pages, blog, FAQs, settings</span>
+      </a>
+      <a href="/" target="_blank" rel="noopener" class="dash-action">
+        🌐 View the website
+        <span>Open the live site in a new tab</span>
+      </a>
+    </div>
+  </section>
+
+  <style>
+    .dash-h1 { color: var(--navy); font-size: 1.6rem; margin: 0 0 0.25rem; }
+    .dash-sub { color: var(--steel); margin: 0 0 1.25rem; }
+    .dash-banner {
+      background: #fff8e1;
+      border: 1px dashed #d4a017;
+      color: #7a5c00;
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .dash-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 1.1rem 1.2rem;
+    }
+    .dash-card h2 { font-size: 1.1rem; color: var(--navy); margin: 0 0 0.35rem; }
+    .dash-card-desc { color: #1a2433; font-size: 0.9rem; margin: 0 0 0.6rem; }
+    .dash-pill {
+      display: inline-block;
+      background: var(--surface);
+      color: var(--steel);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+    .dash-card-note { color: var(--steel); font-size: 0.82rem; margin: 0.6rem 0 0; }
+    .dash-quick h2 { font-size: 1.1rem; color: var(--navy); }
+    .dash-actions { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+    .dash-action {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      text-decoration: none;
+      color: var(--navy);
+      font-weight: 600;
+    }
+    .dash-action span { font-weight: 400; color: var(--steel); font-size: 0.85rem; }
+    .dash-action:hover { border-color: var(--accent); }
+    @media (min-width: 720px) {
+      .dash-grid { grid-template-columns: repeat(2, 1fr); }
+      .dash-actions { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</AdminLayout>
