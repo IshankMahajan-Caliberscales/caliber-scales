@@ -1,8 +1,7 @@
 ---
 /**
- * Weighbridge hub (spec B4/B5) — overview + links to each weighbridge type.
- * Carries an FAQ with FAQPage schema for SEO / AI-search. Individual type
- * pages (/weighbridges/surface-mounted/ etc.) are built in Phase 4.
+ * Weighbridge hub (spec B4/B5) — overview + links to each weighbridge type,
+ * with an FAQ (FAQPage schema) and a "need help selecting" CTA band.
  */
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Section from '@components/ui/Section.astro';
@@ -15,16 +14,18 @@ import { WEIGHBRIDGE_TYPES } from '@lib/catalog';
 import type { FaqItem } from '@lib/schema';
 
 const benefits: Feature[] = [
-  { title: 'Built for heavy traffic', detail: 'Robust decks and load cells sized for continuous, high-tonnage vehicle weighing.' },
-  { title: 'Accurate & compliant', detail: 'Reliable weighing with calibration support for legal-metrology compliance.' },
-  { title: 'Configured to your site', detail: 'Surface mounted, pit type, RCC, instant mobile, track, or unmanned — matched to your layout and traffic.' },
-  { title: 'Serviced nationwide', detail: 'Installation, calibration, and AMC across 25+ states and Union Territories.' },
+  { title: 'Built for heavy-duty operations', detail: 'Engineered for continuous high-tonnage vehicle traffic and harsh industrial conditions.' },
+  { title: 'High accuracy & compliance ready', detail: 'Designed for reliable measurement with calibration support for legal-metrology compliance.' },
+  { title: 'Customised for your site', detail: 'Multiple configurations including surface mounted, pit type, mobile, track, and unmanned systems.' },
+  { title: 'End-to-end execution', detail: 'From design and manufacturing to installation and commissioning.' },
+  { title: 'Nationwide service support', detail: 'Installation, calibration, and AMC coverage across 25+ states and Union Territories.' },
+  { title: 'Fast deployment capability', detail: 'Quick installation options including instant mobile systems for urgent requirements.' },
 ];
 
 const faqs: FaqItem[] = [
   {
     q: 'Which type of weighbridge should I choose?',
-    a: 'It depends on your site and traffic. Surface mounted (pitless) weighbridges are quick to install and easy to maintain; pit type (pit-mounted) designs save yard space; RCC decks suit very heavy continuous traffic; instant mobile units install in hours with no foundation; track weighing units are an economical option for four-wheeler vehicles; and unmanned systems automate weighing round the clock. We can recommend the right fit for your application.',
+    a: 'It depends on your site and traffic. Surface mounted (pitless) weighbridges are quick to install and easy to maintain; pit type designs sit flush with the ground and save yard space; instant mobile units install in hours with no foundation; track-type units are an economical option for lighter vehicles; and unmanned automated systems handle weighing round the clock. We can recommend the right fit for your application.',
   },
   {
     q: 'What capacity weighbridge do I need?',
@@ -39,24 +40,26 @@ const faqs: FaqItem[] = [
 
 <BaseLayout
   title="Weighbridges"
-  metaTitle="Weighbridge Manufacturer — Surface Mounted, Pit Type, RCC & More | Caliber Scales"
-  description="Caliber Scales manufactures surface mounted, pit type, RCC, instant mobile, track, and unmanned weighbridges (5–100 MT). Heavy-duty truck scales with installation, calibration, and AMC across India."
+  metaTitle="Weighbridge Manufacturer — Surface Mounted, Pit Type, Mobile & More | Caliber Scales"
+  description="Caliber Scales manufactures surface mounted, pit type, instant mobile, track, and unmanned weighbridges (5–100 MT). Heavy-duty truck scales with installation, calibration, and AMC across India."
   crumbs={[
     { name: 'Products', href: '/products/' },
     { name: 'Weighbridges', href: '/weighbridges/' },
   ]}
+  ctaHeading="Need help selecting the right weighbridge?"
+  ctaSub="Not sure which configuration fits your site? Speak directly with our engineering team. Share your requirement and we will recommend the most suitable solution based on traffic load, space, and application — with expert guidance and quotation support."
 >
   <Hero
     eyebrow="Weighbridges"
-    title="Weighbridges built for India's heaviest jobs"
-    lede="Surface mounted, pit type, RCC, instant mobile, track, and unmanned weighbridges (5–100 MT) — designed, manufactured, installed, and serviced by Caliber Scales."
+    title="Weighbridges built for India's heaviest industrial workloads"
+    lede="Surface mounted, pit type, instant mobile, track, and unmanned weighbridges (5–100 MT) — designed, manufactured, installed, and serviced by Caliber Scales for reliable performance in demanding industrial environments."
   />
 
-  <Section title="Weighbridge types" intro="Each type suits a different site, traffic pattern, and budget.">
+  <Section title="Weighbridge types" intro="Each weighbridge type is designed for specific site conditions, vehicle traffic, and operational requirements.">
     <ProductGrid items={WEIGHBRIDGE_TYPES} />
   </Section>
 
-  <Section surface title="Why a Caliber weighbridge">
+  <Section surface title="Why choose a Caliber weighbridge">
     <FeatureList items={benefits} />
   </Section>
 

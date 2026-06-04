@@ -55,18 +55,7 @@ export function draftUrlPaths(): string[] {
     if (isDraft(fm)) paths.push(`/services/${slug}/`);
   }
   for (const { slug, fm } of entries('blog')) {
-    if (!isDraft(fm)) continue;
-    const type = fm.type || 'article';
-    const base =
-      type === 'buying-guide'
-        ? '/resources/buying-guides/'
-        : type === 'installation-guide'
-          ? '/resources/installation-guides/'
-          : '/resources/blog/';
-    paths.push(`${base}${slug}/`);
-  }
-  for (const { slug, fm } of entries('caseStudies')) {
-    if (isDraft(fm)) paths.push(`/resources/case-studies/${slug}/`);
+    if (isDraft(fm)) paths.push(`/resources/blog/${slug}/`);
   }
 
   return paths;

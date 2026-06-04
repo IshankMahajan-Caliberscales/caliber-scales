@@ -54,7 +54,6 @@ const industries = defineCollection({
     heroImage: z.string().optional(),
     painPoints: z.array(z.string()).default([]),
     recommendedProducts: z.array(z.string()).default([]),
-    relatedCaseStudies: z.array(z.string()).default([]),
     faqs: z.array(qa).default([]),
   }),
 });
@@ -75,8 +74,6 @@ const blog = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
   schema: z.object({
     ...seo,
-    /** Routes the entry under /resources/blog, /buying-guides, or /installation-guides. */
-    type: z.enum(['article', 'buying-guide', 'installation-guide']).default('article'),
     excerpt: z.string(),
     heroImage: z.string().optional(),
     author: z.string().default('Caliber Scales'),
@@ -84,22 +81,6 @@ const blog = defineCollection({
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
     relatedProducts: z.array(z.string()).default([]),
-  }),
-});
-
-const caseStudies = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/caseStudies' }),
-  schema: z.object({
-    ...seo,
-    clientName: z.string().default('Confidential'),
-    industry: z.string(),
-    location: z.string().optional(),
-    productUsed: z.string().optional(),
-    challenge: z.string(),
-    solution: z.string(),
-    result: z.string(),
-    heroImage: z.string().optional(),
-    gallery: z.array(z.string()).default([]),
   }),
 });
 
@@ -113,4 +94,4 @@ const faqs = defineCollection({
   }),
 });
 
-export const collections = { products, industries, services, blog, caseStudies, faqs };
+export const collections = { products, industries, services, blog, faqs };

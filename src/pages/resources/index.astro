@@ -9,18 +9,15 @@ import ProductGrid from '@components/blocks/ProductGrid.astro';
 import type { CategoryCard } from '@lib/catalog';
 
 const cards: CategoryCard[] = [
-  { title: 'Blog', href: '/resources/blog/', blurb: 'Expert articles on weighing, from a manufacturer.' },
-  { title: 'Buying guides', href: '/resources/buying-guides/', blurb: 'How to choose the right weighing equipment.' },
-  { title: 'Installation guides', href: '/resources/installation-guides/', blurb: 'Practical guidance on installation and setup.' },
-  { title: 'Case studies', href: '/resources/case-studies/', blurb: 'Real installations and the results they delivered.' },
+  { title: 'Blog', href: '/resources/blog/', blurb: 'Expert articles on industrial weighing, from a manufacturer.' },
   { title: 'FAQs', href: '/resources/faqs/', blurb: 'Answers to common weighing questions.' },
 ];
 ---
 
 <BaseLayout
   title="Resources"
-  metaTitle="Weighing Resources, Guides & Case Studies | Caliber Scales"
-  description="Articles, buying and installation guides, case studies, and FAQs on industrial weighing — from a manufacturer with decades of experience."
+  metaTitle="Weighing Resources & FAQs | Caliber Scales"
+  description="Articles and FAQs on industrial weighing — from a manufacturer with decades of experience."
   crumbs={[{ name: 'Resources', href: '/resources/' }]}
 >
   <Hero

@@ -60,6 +60,12 @@ export default defineConfig({
     // Weighbridge category renames (kept names → new URLs).
     '/weighbridges/pitless/': '/weighbridges/surface-mounted/',
     '/weighbridges/pit-mounted/': '/weighbridges/pit-type/',
+    // Removed in content revision → hubs.
+    '/weighbridges/rcc/': '/weighbridges/',
+    '/services/calibration/': '/services/',
+    '/resources/case-studies/': '/resources/',
+    '/resources/buying-guides/': '/resources/',
+    '/resources/installation-guides/': '/resources/',
     // Legacy .php site (B14).
     '/electronic-weighbridge.php': '/weighbridges/',
     '/customized-weighing-systems.php': '/products/tank-weighing-systems/',

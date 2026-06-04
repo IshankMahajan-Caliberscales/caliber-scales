@@ -4,7 +4,6 @@
  * FeatureList, ClientLogos (when available), case-study highlights (when
  * published), and a lead form. Single H1 lives in the Hero.
  */
-import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Section from '@components/ui/Section.astro';
 import Hero from '@components/blocks/Hero.astro';
@@ -13,15 +12,11 @@ import ProductGrid from '@components/blocks/ProductGrid.astro';
 import IndustryGrid from '@components/blocks/IndustryGrid.astro';
 import FeatureList from '@components/blocks/FeatureList.astro';
 import ClientLogos from '@components/blocks/ClientLogos.astro';
-import CaseStudyCard from '@components/blocks/CaseStudyCard.astro';
 import LeadForm from '@components/blocks/LeadForm.astro';
 import { SITE, STATS } from '@lib/site';
 import { PRODUCT_CATEGORIES } from '@lib/catalog';
 import homepage from '../content/settings/homepage.json';
 import clientsData from '../content/settings/clients.json';
-
-// Published (non-draft) case studies for the highlights row.
-const caseStudies = (await getCollection('caseStudies', ({ data }) => !data.draft)).slice(0, 3);
 
 // Client logos (editable in the CMS → Client Logos). Keystatic stores the image
 // filename, so prepend the public path unless an absolute path is already set.
@@ -73,38 +68,20 @@ const CLIENTS = clientsData.logos.map((c) => ({
     )
   }
 
-  {
-    caseStudies.length > 0 && (
-      <Section title="Recent work" intro="Real installations and the results they delivered.">
-        <div class="cs-grid">
-          {caseStudies.map((cs) => (
-            <CaseStudyCard
-              title={cs.data.title}
-              href={`/resources/case-studies/${cs.id}/`}
-              industry={cs.data.industry}
-              clientName={cs.data.clientName}
-              summary={cs.data.result}
-              image={cs.data.heroImage}
-            />
-          ))}
-        </div>
-      </Section>
-    )
-  }
 
   <Section surface id="quote">
     <div class="home-quote">
       <div class="home-quote-copy">
         <h2>Get a quote from the manufacturer</h2>
         <p>
-          Speak directly with the team that designs and builds your weighing
-          equipment. Share your requirement and we will recommend the right
-          configuration for your site.
+          Speak directly with the team that designs and manufactures your
+          weighing systems. Share your requirements, and we'll recommend the
+          most suitable configuration for your site and application.
         </p>
         <ul class="quote-points">
-          <li>{STATS.installations} installations &amp; {STATS.clients} satisfied clients across {STATS.statesCovered} states &amp; UTs</li>
-          <li>{STATS.certification} certified manufacturer since {STATS.foundedYear}</li>
-          <li>Installation, calibration, and AMC support nationwide</li>
+          <li>{STATS.installations} installations and {STATS.clients} satisfied clients across {STATS.statesCovered} states &amp; Union Territories</li>
+          <li>{STATS.certification} certified manufacturer, established in {STATS.foundedYear}</li>
+          <li>Nationwide support for installation, calibration, and annual maintenance contracts (AMC)</li>
         </ul>
       </div>
       <div class="home-quote-form">

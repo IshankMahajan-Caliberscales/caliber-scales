@@ -20,12 +20,7 @@ const { entry } = Astro.props;
 const d = entry.data;
 const { Content } = await render(entry);
 
-const SECTIONS = {
-  article: { base: '/resources/blog/', name: 'Blog' },
-  'buying-guide': { base: '/resources/buying-guides/', name: 'Buying guides' },
-  'installation-guide': { base: '/resources/installation-guides/', name: 'Installation guides' },
-} as const;
-const section = SECTIONS[d.type];
+const section = { base: '/resources/blog/', name: 'Blog' };
 const url = `${section.base}${entry.id}/`;
 
 // Soft CTA: resolve related products to links.

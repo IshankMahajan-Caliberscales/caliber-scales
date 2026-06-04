@@ -1,6 +1,6 @@
 ---
 /**
- * Blog listing — articles (type === 'article'). Drafts shown only in dev.
+ * Blog listing — articles. Drafts shown only in dev.
  */
 import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
@@ -9,7 +9,7 @@ import Hero from '@components/blocks/Hero.astro';
 import ArticleCard from '@components/blocks/ArticleCard.astro';
 import { formatDate } from '@lib/format';
 
-const all = await getCollection('blog', ({ data }) => data.type === 'article');
+const all = await getCollection('blog');
 const visible = (import.meta.env.PROD ? all.filter((p) => !p.data.draft) : all).sort(
   (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
 );

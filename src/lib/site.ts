@@ -64,6 +64,8 @@ export const STATS = {
   clients: s.clients,
   statesCovered: s.statesCovered,
   certification: s.certification,
+  /** Marketing compliance line for the trust banner (e.g. ISO/OIML). */
+  compliance: s.compliance ?? 'ISO/OIML Compliant Designs',
 };
 
 export const SOCIAL: { label: string; href: string }[] = [
@@ -79,6 +81,7 @@ export const NAV: NavItem[] = [
       { label: 'Weighbridges', href: '/weighbridges/' },
       { label: 'Platform scales', href: '/products/platform-scales/' },
       { label: 'Tank weighing systems', href: '/products/tank-weighing-systems/' },
+      { label: 'Crane scales', href: '/products/crane-scales/' },
       { label: 'Hanging scales', href: '/products/hanging-scales/' },
       { label: 'Analytical balances', href: '/products/analytical-balances/' },
       { label: 'Table-top scales', href: '/products/table-top-scales/' },
@@ -89,15 +92,18 @@ export const NAV: NavItem[] = [
     label: 'Industries',
     href: '/industries/',
     children: [
-      { label: 'Logistics & transport', href: '/industries/logistics/' },
-      { label: 'Warehousing', href: '/industries/warehousing/' },
-      { label: 'Cement', href: '/industries/cement/' },
-      { label: 'Mining', href: '/industries/mining/' },
-      { label: 'Pharma', href: '/industries/pharma/' },
-      { label: 'Steel', href: '/industries/steel/' },
-      { label: 'Agriculture', href: '/industries/agriculture/' },
+      { label: 'Construction & Infrastructure', href: '/industries/construction/' },
+      { label: 'Mining & Minerals', href: '/industries/mining/' },
+      { label: 'Steel & Metals', href: '/industries/steel/' },
       { label: 'Manufacturing', href: '/industries/manufacturing/' },
+      { label: 'Cement & Building Materials', href: '/industries/cement/' },
+      { label: 'Warehousing & Distribution', href: '/industries/warehousing/' },
+      { label: 'Agriculture', href: '/industries/agriculture/' },
+      { label: 'Waste Management & Recycling', href: '/industries/waste-management/' },
+      { label: 'Pharma', href: '/industries/pharma/' },
       { label: 'Chemical', href: '/industries/chemical/' },
+      { label: 'Logistics & Transport', href: '/industries/logistics/' },
+      { label: 'Industrial Terminals & Hubs', href: '/industries/industrial-terminals/' },
     ],
   },
   {
@@ -105,9 +111,8 @@ export const NAV: NavItem[] = [
     href: '/services/',
     children: [
       { label: 'Installation', href: '/services/installation/' },
-      { label: 'Calibration', href: '/services/calibration/' },
       { label: 'AMC services', href: '/services/amc/' },
-      { label: 'Repair & maintenance', href: '/services/repair/' },
+      { label: 'Repair & Relocation', href: '/services/repair/' },
       { label: 'Software integration', href: '/services/software-integration/' },
     ],
   },
@@ -116,9 +121,6 @@ export const NAV: NavItem[] = [
     href: '/resources/',
     children: [
       { label: 'Blog', href: '/resources/blog/' },
-      { label: 'Case studies', href: '/resources/case-studies/' },
-      { label: 'Buying guides', href: '/resources/buying-guides/' },
-      { label: 'Installation guides', href: '/resources/installation-guides/' },
       { label: 'FAQs', href: '/resources/faqs/' },
     ],
   },
