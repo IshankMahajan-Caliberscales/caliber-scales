@@ -34,6 +34,7 @@ const subpages = [
   <TrustBar />
 
   <Section title="Who we are">
+    <div class="about-who">
     <div class="prose">
       <p>
         Founded in <strong>{STATS.foundedYear}</strong>, Caliber Scales India Pvt. Ltd. is an
@@ -77,6 +78,7 @@ const subpages = [
         <li>Fully Customised Industrial Weighing Solutions</li>
       </ul>
     </div>
+    </div>
   </Section>
 
   <Section surface title="Our mission">
@@ -113,9 +115,14 @@ const subpages = [
     margin: 0 0 1rem;
     line-height: 1.7;
   }
+  .about-who {
+    display: grid;
+    gap: 2rem;
+  }
+  .about-who .prose {
+    max-width: none;
+  }
   .range-box {
-    margin-top: 1.5rem;
-    max-width: 760px;
     padding: 1.4rem 1.6rem;
     background: var(--color-surface);
     border: 1px solid #e4e9ee;
@@ -133,7 +140,7 @@ const subpages = [
     padding: 0;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0.7rem 1.75rem;
+    gap: 0.7rem;
   }
   .range li {
     position: relative;
@@ -150,9 +157,11 @@ const subpages = [
     color: var(--color-success);
     font-weight: 700;
   }
-  @media (min-width: 620px) {
-    .range {
-      grid-template-columns: repeat(2, 1fr);
+  @media (min-width: 900px) {
+    .about-who {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 2.5rem;
+      align-items: start;
     }
   }
   .placeholder-note {
