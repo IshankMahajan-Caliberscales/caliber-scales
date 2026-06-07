@@ -57,22 +57,25 @@ const subpages = [
         industrial weighing solutions for critical sectors such as construction,
         logistics, cement, mining, steel, agriculture, and pharmaceuticals.
       </p>
-      <p>Our core product range includes:</p>
-      <ul class="range">
-        <li>Truck Weighbridges (Pit Type, Surface Mounted Weighbridges)</li>
-        <li>Mobile Weighbridges and Portable Weighing Systems</li>
-        <li>Electronic Platform Scales &amp; Heavy-Duty Floor Scales</li>
-        <li>Laboratory and Precision Balances</li>
-        <li>Conveyor Weighing Systems (Dynamic &amp; Static)</li>
-        <li>Tank, Silo, Hopper, and Vessel Weighing Systems</li>
-        <li>Checkweighers and Automated Weighing Systems</li>
-        <li>Fully Customised Industrial Weighing Solutions</li>
-      </ul>
       <p>
         Each system is engineered for <strong>high accuracy, rugged industrial use,
         and long service life</strong>, ensuring dependable performance in demanding
         environments.
       </p>
+    </div>
+
+    <div class="range-box">
+      <p class="range-title">Our core product range</p>
+      <ul class="range">
+        <li>Truck Weighbridges — Pit Type &amp; Surface Mounted</li>
+        <li>Mobile &amp; Portable Weighing Systems</li>
+        <li>Electronic Platform Scales &amp; Heavy-Duty Floor Scales</li>
+        <li>Laboratory &amp; Precision Balances</li>
+        <li>Conveyor Weighing Systems (Dynamic &amp; Static)</li>
+        <li>Tank, Silo, Hopper &amp; Vessel Weighing Systems</li>
+        <li>Checkweighers &amp; Automated Weighing Systems</li>
+        <li>Fully Customised Industrial Weighing Solutions</li>
+      </ul>
     </div>
   </Section>
 
@@ -110,10 +113,47 @@ const subpages = [
     margin: 0 0 1rem;
     line-height: 1.7;
   }
-  .range {
+  .range-box {
+    margin-top: 1.5rem;
+    max-width: 760px;
+    padding: 1.4rem 1.6rem;
+    background: var(--color-surface);
+    border: 1px solid #e4e9ee;
+    border-radius: var(--radius-card);
+  }
+  .range-title {
     margin: 0 0 1rem;
-    padding-left: 1.25rem;
-    line-height: 1.8;
+    font-weight: 500;
+    font-size: 1.05rem;
+    color: var(--color-navy);
+  }
+  .range {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.7rem 1.75rem;
+  }
+  .range li {
+    position: relative;
+    padding-left: 1.7rem;
+    color: #1a2433;
+    line-height: 1.45;
+    font-size: 0.95rem;
+  }
+  .range li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--color-success);
+    font-weight: 700;
+  }
+  @media (min-width: 620px) {
+    .range {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
   .placeholder-note {
     padding: 0.75rem 1rem;
