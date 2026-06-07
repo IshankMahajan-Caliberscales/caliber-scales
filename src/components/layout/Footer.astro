@@ -27,20 +27,29 @@ const columns = NAV.filter((i) => i.children);
     </div>
 
     {
-      columns.map((col) => (
-        <nav class="footer-col" aria-label={col.label}>
-          <h2 class="footer-heading">
-            <a href={col.href}>{col.label}</a>
-          </h2>
-          <ul>
-            {col.children!.map((c) => (
-              <li>
-                <a href={c.href}>{c.label}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      ))
+      columns.map((col) => {
+        const items = col.children!.slice(0, 6);
+        const hasMore = col.children!.length > items.length;
+        return (
+          <nav class="footer-col" aria-label={col.label}>
+            <h2 class="footer-heading">
+              <a href={col.href}>{col.label}</a>
+            </h2>
+            <ul>
+              {items.map((c) => (
+                <li>
+                  <a href={c.href}>{c.label}</a>
+                </li>
+              ))}
+              {hasMore && (
+                <li>
+                  <a class="footer-more" href={col.href}>View all →</a>
+                </li>
+              )}
+            </ul>
+          </nav>
+        );
+      })
     }
 
     <div class="footer-col footer-contact">
@@ -71,13 +80,20 @@ const columns = NAV.filter((i) => i.children);
   .site-footer {
     background: var(--color-navy);
     color: #cdd6e1;
-    margin-top: 4rem;
+    margin-top: 3rem;
   }
   .footer-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    padding-block: 3rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 1.25rem;
+    padding-block: 2.25rem;
+  }
+  .footer-about {
+    grid-column: 1 / -1;
+  }
+  .footer-more {
+    color: #9fb0c4 !important;
+    font-weight: 500;
   }
   .footer-name {
     font-weight: 500;
@@ -160,17 +176,23 @@ const columns = NAV.filter((i) => i.children);
     border-radius: 8px;
   }
 
-  @media (min-width: 700px) {
+  @media (min-width: 600px) {
     .footer-grid {
-      grid-template-columns: 1.5fr 1fr 1fr 1fr;
-    }
-    .footer-about {
-      grid-column: 1;
+      grid-template-columns: repeat(3, 1fr);
     }
     .footer-bar-inner {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
+    }
+  }
+  @media (min-width: 960px) {
+    .footer-grid {
+      grid-template-columns: 1.7fr repeat(5, 1fr);
+      gap: 1.5rem;
+    }
+    .footer-about {
+      grid-column: 1;
     }
   }
 </style>
