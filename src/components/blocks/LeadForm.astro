@@ -25,13 +25,15 @@ const {
   </div>
 
   <form class="lead-form" novalidate data-source={source}>
-    <div class="field">
-      <label for="lf-name">Name<span aria-hidden="true">*</span></label>
-      <input id="lf-name" name="name" type="text" autocomplete="name" required />
-    </div>
-    <div class="field">
-      <label for="lf-company">Company</label>
-      <input id="lf-company" name="company" type="text" autocomplete="organization" />
+    <div class="lead-row">
+      <div class="field">
+        <label for="lf-name">Name<span aria-hidden="true">*</span></label>
+        <input id="lf-name" name="name" type="text" autocomplete="name" required />
+      </div>
+      <div class="field">
+        <label for="lf-company">Company</label>
+        <input id="lf-company" name="company" type="text" autocomplete="organization" />
+      </div>
     </div>
     <div class="field">
       <label for="lf-phone">Phone<span aria-hidden="true">*</span></label>
@@ -63,6 +65,12 @@ const {
     border-radius: var(--radius-card);
     padding: 1.5rem;
     box-shadow: 0 18px 40px -28px rgba(12, 45, 82, 0.45);
+    /* Keep the form a tidy, focused width even inside a full-width section, so
+       it doesn't stretch across the whole page. Already-columned uses (home,
+       contact) are narrower than this, so they're unaffected. */
+    max-width: 580px;
+    margin-inline: auto;
+    container-type: inline-size;
   }
   .lead-title {
     margin: 0 0 0.35rem;
@@ -76,6 +84,20 @@ const {
   .lead-form {
     display: grid;
     gap: 0.9rem;
+  }
+  /* Name + Company share a row on roomy cards, stack on narrow ones — keeps the
+     form shorter without ever cramping the fields. */
+  .lead-row {
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: 1fr;
+  }
+  /* Based on the card's own width (not the screen), so a narrow column never
+     forces two cramped fields side by side. */
+  @container (min-width: 420px) {
+    .lead-row {
+      grid-template-columns: 1fr 1fr;
+    }
   }
   .field {
     display: grid;
