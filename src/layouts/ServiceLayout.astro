@@ -35,6 +35,7 @@ const ogImage = d.ogImage ?? (d.heroImage?.endsWith('.svg') ? undefined : d.hero
     { name: d.name, href: url },
   ]}
   ctaHeading={`Talk to us about ${d.name.toLowerCase()}`}
+  showCTABand={false}
 >
   <Hero title={d.name} lede={d.intro} image={d.heroImage} imageAlt={d.name} />
 

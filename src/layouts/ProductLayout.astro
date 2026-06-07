@@ -60,6 +60,7 @@ const noindex = d.draft || d.noindex;
   noindex={noindex}
   crumbs={crumbs}
   ctaHeading={`Get a quote for the ${d.title.toLowerCase()}`}
+  showCTABand={false}
 >
   <Hero title={d.title} lede={d.shortDescription} image={d.heroImage} imageAlt={d.title} imageFit="contain">
     {d.capacityRange && <p class="capacity">Capacity: <strong>{d.capacityRange}</strong></p>}
