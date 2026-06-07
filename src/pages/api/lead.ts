@@ -10,7 +10,7 @@ import type { APIRoute } from 'astro';
  *     returns a success state so the front-end flow can be built and tested.
  *
  * This route opts out of static prerendering so it runs as a serverless
- * function on Vercel.
+ * function on Netlify.
  */
 export const prerender = false;
 

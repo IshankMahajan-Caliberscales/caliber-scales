@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import keystatic from '@keystatic/astro';
-import vercel from '@astrojs/vercel';
+import netlify from '@astrojs/netlify';
 
 import { SITE } from './src/lib/site';
 import { draftUrlPaths } from './src/lib/draft-urls';
@@ -12,14 +12,15 @@ import { draftUrlPaths } from './src/lib/draft-urls';
 // Full URLs of draft (noindex) pages — kept out of the sitemap.
 const draftUrls = new Set(draftUrlPaths().map((p) => new URL(p, SITE.url).href));
 
-// Static-first build. Only /api/lead opts into on-demand rendering
-// (via `export const prerender = false` in that file), so the Vercel
-// adapter is used purely for that serverless endpoint while every page
-// ships as a prerendered static asset for top Core Web Vitals.
+// Static-first build on Netlify (free tier; functions run on real Node.js, so
+// the /api/lead endpoint, the custom /admin login, and the Keystatic CMS all
+// work). Most routes are prerendered static for top Core Web Vitals; only
+// /api/lead, /admin/* and /keystatic opt into on-demand rendering (serverless
+// functions) via `export const prerender = false`.
 export default defineConfig({
   site: SITE.url,
   output: 'static',
-  adapter: vercel(),
+  adapter: netlify(),
   // Typed env (astro:env). Server secrets power the custom /admin login; the
   // GA4 id is public (client). All optional so the build never fails when unset.
   env: {
@@ -55,7 +56,7 @@ export default defineConfig({
   ],
   // Tailwind v4 is wired via PostCSS (postcss.config.mjs), not the Vite plugin.
   // 301 redirects from the legacy .php site (B14). Astro emits these through
-  // the Vercel adapter as host-level redirects.
+  // the Netlify adapter as host-level redirects.
   redirects: {
     // Weighbridge category renames (kept names → new URLs).
     '/weighbridges/pitless/': '/weighbridges/surface-mounted/',

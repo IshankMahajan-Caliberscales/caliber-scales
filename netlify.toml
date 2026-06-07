@@ -1,0 +1,10 @@
+# Netlify hosting config.
+# The @astrojs/netlify adapter automatically wires up the serverless functions
+# (for /api/lead, /admin/*, and /keystatic) and the redirects, so this only sets
+# the build command, publish directory, and Node version.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"

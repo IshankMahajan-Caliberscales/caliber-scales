@@ -17,7 +17,7 @@ import { createElement } from 'react';
  *      "Set up GitHub" flow — it creates a GitHub App and writes the secrets to
  *      .env: KEYSTATIC_GITHUB_CLIENT_ID, KEYSTATIC_GITHUB_CLIENT_SECRET,
  *      KEYSTATIC_SECRET, PUBLIC_KEYSTATIC_GITHUB_APP_SLUG.
- *   2. Add those same four variables to your host (Vercel → Project → Settings →
+ *   2. Add those same four variables to your host (Netlify → Site settings →
  *      Environment Variables) and redeploy.
  *   3. In the GitHub App settings, set the callback/homepage URLs to your live
  *      domain.

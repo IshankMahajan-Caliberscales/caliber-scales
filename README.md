@@ -2,7 +2,7 @@
 
 Industrial weighing manufacturer site. Built with **Astro + TypeScript +
 Tailwind CSS v4**, static output with a single serverless lead endpoint,
-deployed on **Vercel**. Full plan & spec: `caliber-scales-website-spec.md`.
+deployed on **Netlify** (free tier). Full plan & spec: `caliber-scales-website-spec.md`.
 
 ## Commands
 
@@ -70,7 +70,7 @@ just a Git commit.
    writes four secrets to `.env`: `KEYSTATIC_GITHUB_CLIENT_ID`,
    `KEYSTATIC_GITHUB_CLIENT_SECRET`, `KEYSTATIC_SECRET`,
    `PUBLIC_KEYSTATIC_GITHUB_APP_SLUG`. (Plain `npm run dev` stays in local mode.)
-2. Add those same four variables in **Vercel → Project → Settings → Environment
+2. Add those same four variables in **Netlify → Site settings → Environment
    Variables**, then redeploy.
 3. In the GitHub App's settings, set the homepage/callback URLs to your live
    domain.
@@ -78,9 +78,19 @@ just a Git commit.
 After that, anyone you grant repo access can edit content at
 `https://your-domain/keystatic`.
 
-## Deploy (Vercel)
+## Deploy (Netlify — free tier)
 
-Connect the repo to Vercel; the `@astrojs/vercel` adapter is preconfigured.
-Build command `npm run build`, output handled by the adapter. Set the custom
-domain + SSL in the Vercel dashboard. Env vars go in Project Settings →
-Environment Variables; see `.env.example`.
+The `@astrojs/netlify` adapter is preconfigured (see `netlify.toml`), so the
+serverless functions for `/api/lead`, `/admin/*`, and `/keystatic` run on
+Netlify's Node runtime. To deploy:
+
+1. Create a free Netlify account → **Add new site → Import from GitHub** → pick
+   this repo. Netlify auto-detects the build (`npm run build`, publish `dist`).
+2. Add the env secrets in **Site settings → Environment variables** (the `/admin`
+   login secrets and, once set up, the Keystatic GitHub secrets — see
+   `.env.example`).
+3. Add your **custom domain** (e.g. from GoDaddy) under **Domain management** and
+   enable the free SSL. Every `git push` then auto-deploys.
+
+Netlify's free tier runs the full app (static pages + the Node functions) and is
+fine for a site of this size.
