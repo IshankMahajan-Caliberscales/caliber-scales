@@ -51,10 +51,18 @@ const { title, href, excerpt, date, image, tag, draft } = Astro.props;
     box-shadow: 0 14px 30px -18px rgba(12, 45, 82, 0.45);
     transform: translateY(-2px);
   }
+  /* Fixed-ratio thumbnail so every card in a row is the same height. */
+  .art-media {
+    display: block;
+    aspect-ratio: 16 / 9;
+    background: var(--color-surface);
+    overflow: hidden;
+  }
   .art-media img {
     width: 100%;
-    height: auto;
+    height: 100%;
     object-fit: cover;
+    object-position: center;
     display: block;
   }
   .art-body {

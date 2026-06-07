@@ -34,13 +34,16 @@ const recommended: CategoryCard[] = (d.recommendedProducts ?? [])
   }));
 
 const noindex = d.draft || d.noindex;
+// Vector (SVG) covers don't render as social share images on most platforms, so
+// fall back to the site default OG banner for those.
+const ogImage = d.ogImage ?? (d.heroImage?.endsWith('.svg') ? undefined : d.heroImage);
 ---
 
 <BaseLayout
   title={d.name}
   metaTitle={d.metaTitle}
   description={d.metaDescription}
-  ogImage={d.ogImage ?? d.heroImage}
+  ogImage={ogImage}
   noindex={noindex}
   crumbs={[
     { name: 'Industries', href: '/industries/' },
