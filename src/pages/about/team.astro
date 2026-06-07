@@ -1,16 +1,40 @@
 ---
 /**
- * About → Team. Placeholder structure. Real names, roles, and photos are added
- * only from client-supplied content — no team members are invented.
+ * About → Team. Published with general team copy. Individual profiles/photos
+ * can be added later via client-supplied content (no team members are invented).
  */
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Section from '@components/ui/Section.astro';
 import Hero from '@components/blocks/Hero.astro';
+import { STATS } from '@lib/site';
+
+const groups = [
+  {
+    title: 'Design & engineering',
+    detail:
+      'Mechanical and electronics engineers who design weighbridges, scales, and customised weighing systems around each application, capacity, and site.',
+  },
+  {
+    title: 'Manufacturing & quality',
+    detail:
+      'Production and quality specialists who build and inspect every system in-house under our ISO 9001:2015 quality-management system.',
+  },
+  {
+    title: 'Installation & calibration',
+    detail:
+      'Field engineers who prepare sites, install and commission equipment, and calibrate it for accurate, compliant weighing.',
+  },
+  {
+    title: 'Service & support',
+    detail:
+      'A dedicated team of experienced, trained service technicians providing repair, relocation, and AMC support across India.',
+  },
+];
 ---
 
 <BaseLayout
   title="Our Team"
-  description="The people behind Caliber Scales India."
+  description="The engineers, technicians, and support staff behind Caliber Scales India."
   crumbs={[
     { name: 'About', href: '/about/' },
     { name: 'Team', href: '/about/team/' },
@@ -19,26 +43,63 @@ import Hero from '@components/blocks/Hero.astro';
   <Hero
     eyebrow="About us"
     title="Our team"
-    lede="Engineers, technicians, and support staff who design, build, and service your weighing equipment."
+    lede="Engineers, technicians, and support staff who design, build, install, and service your weighing equipment."
     showCtas={false}
   />
 
-  <Section>
-    <p class="placeholder-note">
-      🚧 Team profiles (names, roles, and photos) will be added here from
-      client-supplied content. None are invented.
+  <Section title="The people behind Caliber Scales">
+    <p class="team-intro">
+      Since {STATS.foundedYear}, our work has been carried out by an experienced
+      team spanning design, manufacturing, installation, and after-sales service —
+      one accountable partner across the full lifecycle of your weighing systems.
     </p>
+    <ul class="team-grid">
+      {
+        groups.map((g) => (
+          <li class="team-card">
+            <h2>{g.title}</h2>
+            <p>{g.detail}</p>
+          </li>
+        ))
+      }
+    </ul>
   </Section>
 </BaseLayout>
 
 <style>
-  .placeholder-note {
+  .team-intro {
     max-width: 65ch;
-    padding: 0.75rem 1rem;
-    background: var(--color-surface);
-    border: 1px dashed var(--color-steel);
+    line-height: 1.7;
+    margin: 0 0 1.5rem;
+  }
+  .team-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .team-card {
+    background: #fff;
+    border: 1px solid #e4e9ee;
     border-radius: var(--radius-card);
-    font-size: 0.88rem;
+    padding: 1.1rem 1.25rem;
+  }
+  .team-card h2 {
+    font-size: 1.05rem;
+    color: var(--color-navy);
+    margin: 0 0 0.4rem;
+  }
+  .team-card p {
+    margin: 0;
     color: var(--color-steel);
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+  @media (min-width: 700px) {
+    .team-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 </style>
