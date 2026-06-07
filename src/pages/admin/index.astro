@@ -9,33 +9,65 @@ export const prerender = false;
 
 import AdminLayout from '@layouts/AdminLayout.astro';
 import { SESSION_COOKIE, verifySessionToken } from '@lib/auth';
+import { getStore } from '@netlify/blobs';
 
 const session = verifySessionToken(Astro.cookies.get(SESSION_COOKIE)?.value);
 if (!session) return Astro.redirect('/admin/login/');
 
+interface Lead {
+  name: string;
+  company: string;
+  phone: string;
+  requirement: string;
+  source?: string;
+  receivedAt: string;
+}
+
+// Load recent leads from Netlify Blobs (newest first). Best-effort: if the store
+// isn't reachable (e.g. local dev without the Netlify runtime) we show a note
+// rather than break the dashboard.
+let leads: Lead[] = [];
+let leadsError: string | null = null;
+try {
+  const store = getStore('leads');
+  const { blobs } = await store.list();
+  const recent = blobs.sort((a, b) => (a.key < b.key ? 1 : -1)).slice(0, 50);
+  leads = (
+    await Promise.all(recent.map((b) => store.get(b.key, { type: 'json' }) as Promise<Lead>))
+  ).filter(Boolean) as Lead[];
+} catch (err) {
+  leadsError = err instanceof Error ? err.message : 'Lead store unavailable.';
+}
+
+const fmtDate = (iso: string) => {
+  try {
+    return new Date(iso).toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+  } catch {
+    return iso;
+  }
+};
+
 const cards = [
-  {
-    title: 'Leads',
-    desc: 'Enquiries from the website forms, with name, phone, and requirement.',
-    status: 'Needs a datastore + deploy',
-    note: 'Form submissions currently log server-side. Add a lead store (e.g. Google Sheet / KV) on deploy to see them here.',
-  },
   {
     title: 'Website traffic',
     desc: 'Visitors, top pages, and sources from Google Analytics (GA4).',
-    status: 'Connect GA4 after deploy',
+    status: 'Connect GA4 (after domain is live)',
     note: 'Add your GA4 property + embed a Looker Studio report here.',
   },
   {
     title: 'Google Ads',
     desc: 'Spend, clicks, conversions, and cost-per-lead from your Ads account.',
-    status: 'Connect Google Ads after deploy',
+    status: 'Connect Google Ads (after domain is live)',
     note: 'Conversion tracking gets wired into the site; performance shown via an embedded Looker Studio report.',
   },
   {
     title: 'Search rankings (SEO)',
     desc: 'Impressions, clicks, and queries from Google Search Console.',
-    status: 'Connect Search Console after deploy',
+    status: 'Connect Search Console (after domain is live)',
     note: 'Verify the property on launch, then embed the report here.',
   },
 ];
@@ -45,12 +77,59 @@ const cards = [
   <h1 class="dash-h1">Dashboard</h1>
   <p class="dash-sub">Welcome back. This is your marketing control panel for Caliber Scales.</p>
 
-  <div class="dash-banner">
-    🚧 <strong>Preview build.</strong> The login and panel work now. The data
-    sections below light up once the site is <strong>deployed</strong> and your
-    Google accounts (Analytics, Ads, Search Console) are connected — there's no
-    traffic or ad data to show yet.
+  <div class="dash-banner is-live">
+    ✅ <strong>Live.</strong> The site is deployed and your enquiry form now saves
+    leads here automatically. Traffic, Ads, and Search data light up once you
+    connect the matching Google accounts (best done after the domain goes live).
   </div>
+
+  <article class="dash-card dash-leads">
+    <div class="dash-leads-head">
+      <h2>Leads</h2>
+      <span class="dash-pill">{leadsError ? 'Store unavailable' : `${leads.length} captured`}</span>
+    </div>
+    <p class="dash-card-desc">Enquiries submitted through the website forms.</p>
+
+    {
+      leadsError ? (
+        <p class="dash-card-note">Couldn’t load leads: {leadsError}</p>
+      ) : leads.length === 0 ? (
+        <p class="dash-card-note">
+          No enquiries yet. New submissions from the website forms appear here
+          automatically.
+        </p>
+      ) : (
+        <div class="dash-table-wrap">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Received</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Company</th>
+                <th>Requirement</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leads.map((l) => (
+                <tr>
+                  <td class="dash-nowrap">{fmtDate(l.receivedAt)}</td>
+                  <td>{l.name}</td>
+                  <td class="dash-nowrap">
+                    <a href={`tel:${l.phone}`}>{l.phone}</a>
+                  </td>
+                  <td>{l.company || '—'}</td>
+                  <td class="dash-req">{l.requirement}</td>
+                  <td class="dash-src">{l.source || 'website'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+    }
+  </article>
 
   <section class="dash-grid">
     {
@@ -90,6 +169,60 @@ const cards = [
       border-radius: 8px;
       font-size: 0.9rem;
       margin-bottom: 1.5rem;
+    }
+    .dash-banner.is-live {
+      background: rgba(29, 158, 117, 0.1);
+      border: 1px solid rgba(29, 158, 117, 0.35);
+      color: #0f6b4e;
+    }
+    .dash-leads {
+      margin-bottom: 1.5rem;
+    }
+    .dash-leads-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .dash-leads-head h2 {
+      font-size: 1.1rem;
+      color: var(--navy);
+      margin: 0;
+    }
+    .dash-table-wrap {
+      overflow-x: auto;
+      margin-top: 0.75rem;
+    }
+    .dash-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .dash-table th,
+    .dash-table td {
+      text-align: left;
+      padding: 0.5rem 0.6rem;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    .dash-table th {
+      color: var(--steel);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .dash-table td {
+      color: #1a2433;
+    }
+    .dash-nowrap {
+      white-space: nowrap;
+    }
+    .dash-req {
+      min-width: 200px;
+      max-width: 360px;
+    }
+    .dash-src {
+      color: var(--steel);
+      white-space: nowrap;
     }
     .dash-grid {
       display: grid;

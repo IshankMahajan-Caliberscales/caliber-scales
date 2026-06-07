@@ -1,13 +1,15 @@
 import type { APIRoute } from 'astro';
+import { getStore } from '@netlify/blobs';
+import { randomUUID } from 'node:crypto';
 
 /**
- * Lead capture endpoint (spec B8). PHASE 1 STUB:
+ * Lead capture endpoint (spec B8).
  *   - Validates the payload server-side.
  *   - Rejects honeypot hits silently (returns success to fool bots).
  *   - Best-effort in-memory rate limiting by IP.
- *   - Does NOT yet deliver anywhere — email + Google Sheets/CRM webhook are
- *     wired in a later phase via env vars (see TODOs). For now it logs and
- *     returns a success state so the front-end flow can be built and tested.
+ *   - Persists each lead to Netlify Blobs (store "leads"), which the /admin
+ *     dashboard reads to show recent enquiries. Email/CRM push can be layered
+ *     on top later if desired.
  *
  * This route opts out of static prerendering so it runs as a serverless
  * function on Netlify.
@@ -19,6 +21,8 @@ interface LeadPayload {
   company?: unknown;
   phone?: unknown;
   requirement?: unknown;
+  /** Which page/section produced the lead (hidden field). */
+  source?: unknown;
   /** Honeypot — must be empty. Bots tend to fill every field. */
   website?: unknown;
 }
@@ -91,14 +95,21 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     company: isNonEmptyString(data.company) ? String(data.company).trim() : '',
     phone: String(data.phone).trim(),
     requirement: String(data.requirement).trim(),
+    source: isNonEmptyString(data.source) ? String(data.source).trim() : 'website',
     ip,
     receivedAt: new Date(now).toISOString(),
   };
 
-  // TODO (later phase): deliver the lead.
-  //   1. Email the team (e.g. Resend / SMTP) using env vars.
-  //   2. Optionally POST to a Google Sheets / CRM webhook (LEAD_WEBHOOK_URL).
-  // For now, log so submissions are visible in serverless function logs.
+  // Persist to Netlify Blobs so the lead shows in the /admin dashboard. The key
+  // is epoch-prefixed (newest sorts last lexicographically) with a random
+  // suffix so concurrent submissions never collide.
+  try {
+    const store = getStore('leads');
+    await store.setJSON(`${now}-${randomUUID()}`, lead);
+  } catch (err) {
+    // Never fail the visitor's submission just because storage hiccuped.
+    console.error('[lead] store failed', err);
+  }
   console.log('[lead] received', lead);
 
   return json({ ok: true, message: 'Thank you — we will be in touch shortly.' }, 200);
