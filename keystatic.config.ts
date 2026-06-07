@@ -28,7 +28,7 @@ import { createElement } from 'react';
  */
 
 // GitHub repository that backs the hosted CMS.
-const GITHUB_REPO = 'vardhan20066-tech/caliber-scales';
+const GITHUB_REPO = 'Ishankmahajan-caliberscales/caliber-scales';
 
 // Storage mode:
 //   • Deployed build → always GitHub (the hosted admin panel).

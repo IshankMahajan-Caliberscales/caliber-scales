@@ -58,7 +58,7 @@ just a Git commit.
 - **In development** (`npm run dev` → http://localhost:4321/keystatic) it runs in
   **local mode**: edits write straight to the working tree. No login required.
 - **On the deployed site** it runs in **GitHub mode**: the team logs in with
-  GitHub and edits are committed to this repo (`vardhan20066-tech/caliber-scales`),
+  GitHub and edits are committed to this repo (`Ishankmahajan-caliberscales/caliber-scales`),
   which triggers a redeploy.
 
 ### One-time setup to enable the hosted admin panel
