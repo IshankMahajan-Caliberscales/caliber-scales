@@ -14,18 +14,23 @@ import { getStore } from '@netlify/blobs';
 const session = verifySessionToken(Astro.cookies.get(SESSION_COOKIE)?.value);
 if (!session) return Astro.redirect('/admin/login/');
 
+const LEAD_STATUSES = ['new', 'contacted', 'quoted', 'won', 'lost', 'invalid'];
+
 interface Lead {
+  key: string;
   name: string;
   company: string;
   phone: string;
   requirement: string;
   source?: string;
+  status?: string;
   receivedAt: string;
 }
 
 // Load recent leads from Netlify Blobs (newest first). Best-effort: if the store
 // isn't reachable (e.g. local dev without the Netlify runtime) we show a note
-// rather than break the dashboard.
+// rather than break the dashboard. We keep each lead's blob key so the dashboard
+// can update its status or delete it.
 let leads: Lead[] = [];
 let leadsError: string | null = null;
 try {
@@ -33,7 +38,12 @@ try {
   const { blobs } = await store.list();
   const recent = blobs.sort((a, b) => (a.key < b.key ? 1 : -1)).slice(0, 50);
   leads = (
-    await Promise.all(recent.map((b) => store.get(b.key, { type: 'json' }) as Promise<Lead>))
+    await Promise.all(
+      recent.map(async (b) => {
+        const v = (await store.get(b.key, { type: 'json' })) as Omit<Lead, 'key'> | null;
+        return v ? { key: b.key, ...v } : null;
+      })
+    )
   ).filter(Boolean) as Lead[];
 } catch (err) {
   leadsError = err instanceof Error ? err.message : 'Lead store unavailable.';
@@ -86,9 +96,17 @@ const cards = [
   <article class="dash-card dash-leads">
     <div class="dash-leads-head">
       <h2>Leads</h2>
-      <span class="dash-pill">{leadsError ? 'Store unavailable' : `${leads.length} captured`}</span>
+      <div class="dash-leads-tools">
+        <span class="dash-pill">{leadsError ? 'Store unavailable' : `${leads.length} captured`}</span>
+        {!leadsError && leads.length > 0 && (
+          <a class="dash-dl" href="/api/admin/leads-export">⬇ Download CSV</a>
+        )}
+      </div>
     </div>
-    <p class="dash-card-desc">Enquiries submitted through the website forms.</p>
+    <p class="dash-card-desc">
+      Enquiries from the website forms. Set a status, mark one invalid, or delete
+      it — changes save instantly.
+    </p>
 
     {
       leadsError ? (
@@ -109,11 +127,13 @@ const cards = [
                 <th>Company</th>
                 <th>Requirement</th>
                 <th>Source</th>
+                <th>Status</th>
+                <th aria-label="Delete" />
               </tr>
             </thead>
             <tbody>
               {leads.map((l) => (
-                <tr>
+                <tr class={l.status === 'invalid' ? 'is-invalid' : undefined}>
                   <td class="dash-nowrap">{fmtDate(l.receivedAt)}</td>
                   <td>{l.name}</td>
                   <td class="dash-nowrap">
@@ -122,6 +142,32 @@ const cards = [
                   <td>{l.company || '—'}</td>
                   <td class="dash-req">{l.requirement}</td>
                   <td class="dash-src">{l.source || 'website'}</td>
+                  <td>
+                    <form method="POST" action="/api/admin/leads" class="dash-inline-form">
+                      <input type="hidden" name="action" value="setStatus" />
+                      <input type="hidden" name="key" value={l.key} />
+                      <select
+                        name="status"
+                        class={`dash-status s-${l.status ?? 'new'}`}
+                        data-autosubmit
+                      >
+                        {LEAD_STATUSES.map((s) => (
+                          <option value={s} selected={(l.status ?? 'new') === s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                    </form>
+                  </td>
+                  <td>
+                    <form method="POST" action="/api/admin/leads" class="dash-inline-form" data-confirm>
+                      <input type="hidden" name="action" value="delete" />
+                      <input type="hidden" name="key" value={l.key} />
+                      <button type="submit" class="dash-del" title="Delete lead" aria-label="Delete lead">
+                        ✕
+                      </button>
+                    </form>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -157,6 +203,22 @@ const cards = [
       </a>
     </div>
   </section>
+
+  <script is:inline>
+    // Status dropdown saves on change; delete asks for confirmation first.
+    document.querySelectorAll('select[data-autosubmit]').forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        if (sel.form) sel.form.submit();
+      });
+    });
+    document.querySelectorAll('form[data-confirm]').forEach(function (f) {
+      f.addEventListener('submit', function (e) {
+        if (!window.confirm('Delete this lead permanently? This cannot be undone.')) {
+          e.preventDefault();
+        }
+      });
+    });
+  </script>
 
   <style>
     .dash-h1 { color: var(--navy); font-size: 1.6rem; margin: 0 0 0.25rem; }
@@ -223,6 +285,68 @@ const cards = [
     .dash-src {
       color: var(--steel);
       white-space: nowrap;
+    }
+    .dash-leads-tools {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .dash-dl {
+      font-size: 0.78rem;
+      color: var(--accent);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0.25rem 0.6rem;
+      white-space: nowrap;
+    }
+    .dash-dl:hover {
+      border-color: var(--accent);
+    }
+    .dash-inline-form {
+      margin: 0;
+    }
+    .dash-status {
+      font-size: 0.78rem;
+      padding: 0.22rem 0.35rem;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      text-transform: capitalize;
+      cursor: pointer;
+    }
+    .dash-status.s-won {
+      color: #0f6b4e;
+      border-color: rgba(29, 158, 117, 0.5);
+      background: rgba(29, 158, 117, 0.08);
+    }
+    .dash-status.s-lost,
+    .dash-status.s-invalid {
+      color: #9b2226;
+      border-color: rgba(190, 30, 45, 0.4);
+      background: rgba(190, 30, 45, 0.06);
+    }
+    .dash-status.s-quoted,
+    .dash-status.s-contacted {
+      color: #7a5c00;
+      border-color: rgba(212, 160, 23, 0.5);
+      background: rgba(212, 160, 23, 0.08);
+    }
+    .dash-del {
+      background: none;
+      border: none;
+      color: #b0392f;
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1;
+      padding: 0.25rem 0.4rem;
+      border-radius: 6px;
+    }
+    .dash-del:hover {
+      background: rgba(190, 30, 45, 0.1);
+    }
+    tr.is-invalid td {
+      opacity: 0.5;
     }
     .dash-grid {
       display: grid;

@@ -28,6 +28,10 @@ export default defineConfig({
       AUTH_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
       ADMIN_EMAIL: envField.string({ context: 'server', access: 'secret', optional: true }),
       ADMIN_PASSWORD_HASH: envField.string({ context: 'server', access: 'secret', optional: true }),
+      // Lead email notifications (Resend). All optional — unset = no email sent.
+      RESEND_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
+      LEAD_NOTIFY_EMAIL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      LEAD_FROM_EMAIL: envField.string({ context: 'server', access: 'secret', optional: true }),
       PUBLIC_GA4_ID: envField.string({ context: 'client', access: 'public', optional: true }),
     },
   },
