@@ -1,0 +1,168 @@
+---
+/**
+ * /admin/images — reliable image manager. Lists every page/product whose hero
+ * image is a normal photo (JPG/PNG) and lets an editor replace it. The upload is
+ * optimized + committed via the GitHub API (see /api/admin/upload-image),
+ * bypassing Keystatic's broken image-replace. Auth-protected.
+ */
+export const prerender = false;
+
+import { getCollection } from 'astro:content';
+import AdminLayout from '@layouts/AdminLayout.astro';
+import { SESSION_COOKIE, verifySessionToken } from '@lib/auth';
+import homepage from '../../content/settings/homepage.json';
+
+const session = verifySessionToken(Astro.cookies.get(SESSION_COOKIE)?.value);
+if (!session) return Astro.redirect('/admin/login/');
+
+const RASTER = /\.(jpe?g|png)$/i;
+
+interface Target {
+  group: string;
+  name: string;
+  hero: string; // public path, e.g. /images/products/table-top-scales.jpg
+  repo: string; // repo path, e.g. public/images/products/table-top-scales.jpg
+}
+
+const products = (await getCollection('products')).map((e) => ({
+  group: 'Product',
+  name: e.data.title,
+  hero: e.data.heroImage as string,
+}));
+const blog = (await getCollection('blog')).map((e) => ({
+  group: 'Blog',
+  name: e.data.title,
+  hero: e.data.heroImage as string,
+}));
+const home = [{ group: 'Homepage', name: 'Homepage banner', hero: homepage.heroImage as string }];
+
+const targets: Target[] = [...home, ...products, ...blog]
+  .filter((t) => t.hero && RASTER.test(t.hero))
+  .map((t) => ({ ...t, repo: `public${t.hero}` }))
+  .sort((a, b) => a.group.localeCompare(b.group) || a.name.localeCompare(b.name));
+
+const ok = Astro.url.searchParams.get('ok');
+const err = Astro.url.searchParams.get('err');
+const first = targets[0];
+---
+
+<AdminLayout title="Images" authed={true} email={session.email}>
+  <h1 class="dash-h1">Images</h1>
+  <p class="dash-sub">
+    Replace a photo on the website. Pick the page, choose an image, and upload — it’s
+    optimized automatically and goes live in 1–2 minutes.
+  </p>
+
+  {ok && <div class="msg ok">✅ {ok}</div>}
+  {err && <div class="msg err">⚠️ {err}</div>}
+
+  {
+    targets.length === 0 ? (
+      <p class="dash-card-note">No editable image targets found.</p>
+    ) : (
+      <form class="img-card" method="POST" action="/api/admin/upload-image" enctype="multipart/form-data">
+        <label class="fld">
+          <span>Which image?</span>
+          <select name="pick" id="pick">
+            {targets.map((t) => (
+              <option value={t.repo} data-img={t.hero} data-label={`${t.group}: ${t.name}`}>
+                {t.group}: {t.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <div class="current">
+          <span class="cap">Current image</span>
+          <img id="preview" src={first?.hero} alt="" />
+        </div>
+
+        <label class="fld">
+          <span>New image (JPG or PNG)</span>
+          <input type="file" name="file" id="file" accept="image/jpeg,image/png" required />
+        </label>
+
+        {/* These hidden fields carry the chosen target to the server, kept in
+            sync with the dropdown by the script below. */}
+        <input type="hidden" name="path" id="path" value={first?.repo} />
+        <input type="hidden" name="label" id="label" value={first ? `${first.group}: ${first.name}` : ''} />
+
+        <button type="submit" class="btn-go">Upload &amp; publish</button>
+        <p class="hint">
+          Tip: landscape photos look best. Any size is fine — it’s resized and compressed for you.
+          Industry &amp; service banners use vector covers and aren’t listed here.
+        </p>
+      </form>
+    )
+  }
+
+  <p class="back"><a href="/admin">← Back to dashboard</a></p>
+
+  <script is:inline>
+    (function () {
+      var pick = document.getElementById('pick');
+      if (!pick) return;
+      var preview = document.getElementById('preview');
+      var path = document.getElementById('path');
+      var label = document.getElementById('label');
+      pick.addEventListener('change', function () {
+        var opt = pick.options[pick.selectedIndex];
+        if (preview) preview.src = opt.getAttribute('data-img');
+        if (path) path.value = opt.value;
+        if (label) label.value = opt.getAttribute('data-label');
+      });
+    })();
+  </script>
+
+  <style>
+    .dash-h1 { color: var(--navy); font-size: 1.6rem; margin: 0 0 0.25rem; }
+    .dash-sub { color: var(--steel); margin: 0 0 1.25rem; max-width: 60ch; }
+    .dash-card-note { color: var(--steel); }
+    .msg { padding: 0.7rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1.1rem; }
+    .msg.ok { background: rgba(29, 158, 117, 0.12); border: 1px solid rgba(29, 158, 117, 0.35); color: #0f6b4e; }
+    .msg.err { background: rgba(190, 30, 45, 0.1); border: 1px solid rgba(190, 30, 45, 0.4); color: #9b2226; }
+    .img-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 1.25rem;
+      max-width: 540px;
+      display: grid;
+      gap: 1rem;
+    }
+    .fld { display: grid; gap: 0.35rem; }
+    .fld > span { font-size: 0.9rem; font-weight: 600; color: var(--navy); }
+    select, input[type='file'] {
+      width: 100%;
+      padding: 0.55rem 0.6rem;
+      border: 1px solid #c9d2dc;
+      border-radius: 6px;
+      font: inherit;
+      background: #fff;
+    }
+    .current { display: grid; gap: 0.3rem; }
+    .cap { font-size: 0.8rem; color: var(--steel); }
+    #preview {
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .btn-go {
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.65rem 1rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    .btn-go:hover { background: var(--navy-600, #16467f); }
+    .hint { font-size: 0.82rem; color: var(--steel); margin: 0; }
+    .back { margin-top: 1.25rem; }
+    .back a { color: var(--accent); font-size: 0.9rem; }
+  </style>
+</AdminLayout>

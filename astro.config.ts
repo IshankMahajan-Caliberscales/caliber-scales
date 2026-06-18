@@ -32,6 +32,9 @@ export default defineConfig({
       RESEND_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
       LEAD_NOTIFY_EMAIL: envField.string({ context: 'server', access: 'secret', optional: true }),
       LEAD_FROM_EMAIL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      // GitHub token (Contents: read/write) for the /admin image uploader, which
+      // commits optimized images directly — bypassing the Keystatic image bug.
+      GITHUB_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
       PUBLIC_GA4_ID: envField.string({ context: 'client', access: 'public', optional: true }),
     },
   },
