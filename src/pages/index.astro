@@ -14,9 +14,12 @@ import FeatureList from '@components/blocks/FeatureList.astro';
 import ClientLogos from '@components/blocks/ClientLogos.astro';
 import LeadForm from '@components/blocks/LeadForm.astro';
 import { SITE, STATS } from '@lib/site';
-import { PRODUCT_CATEGORIES } from '@lib/catalog';
+import { getProductCards } from '@lib/products';
 import homepage from '../content/settings/homepage.json';
 import clientsData from '../content/settings/clients.json';
+
+// Products grid is built live from the CMS so new products appear automatically.
+const PRODUCTS = await getProductCards();
 
 // Client logos (editable in the CMS → Client Logos). Keystatic stores the image
 // filename, so prepend the public path unless an absolute path is already set.
@@ -45,7 +48,7 @@ const CLIENTS = clientsData.logos.map((c) => ({
     title="Our products"
     intro="A full range of industrial weighing equipment, each with dedicated specifications and applications."
   >
-    <ProductGrid items={PRODUCT_CATEGORIES} />
+    <ProductGrid items={PRODUCTS} />
   </Section>
 
   <Section

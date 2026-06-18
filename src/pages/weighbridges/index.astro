@@ -10,8 +10,11 @@ import ProductGrid from '@components/blocks/ProductGrid.astro';
 import FeatureList from '@components/blocks/FeatureList.astro';
 import FAQAccordion from '@components/blocks/FAQAccordion.astro';
 import type { Feature } from '@lib/catalog';
-import { WEIGHBRIDGE_TYPES } from '@lib/catalog';
+import { getWeighbridgeCards } from '@lib/products';
 import type { FaqItem } from '@lib/schema';
+
+// Built live from the CMS so new weighbridge products appear here automatically.
+const WEIGHBRIDGES = await getWeighbridgeCards();
 
 const benefits: Feature[] = [
   { title: 'Built for heavy-duty operations', detail: 'Engineered for continuous high-tonnage vehicle traffic and harsh industrial conditions.' },
@@ -56,7 +59,7 @@ const faqs: FaqItem[] = [
   />
 
   <Section title="Weighbridge types" intro="Each weighbridge type is designed for specific site conditions, vehicle traffic, and operational requirements.">
-    <ProductGrid items={WEIGHBRIDGE_TYPES} />
+    <ProductGrid items={WEIGHBRIDGES} />
   </Section>
 
   <Section surface title="Why choose a Caliber weighbridge">

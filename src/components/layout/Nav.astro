@@ -6,15 +6,25 @@
  * Keyboard-navigable per B11.
  */
 import { NAV } from '@lib/site';
+import { getProductCards } from '@lib/products';
 
 const path = Astro.url.pathname;
 const isActive = (href: string) =>
   href === '/' ? path === '/' : path.startsWith(href);
+
+// The Products submenu is built live from the CMS so new products appear
+// automatically; the rest of the nav stays as configured in site.ts.
+const productCards = await getProductCards();
+const navItems = NAV.map((item) =>
+  item.href === '/products/'
+    ? { ...item, children: productCards.map((p) => ({ label: p.title, href: p.href })) }
+    : item
+);
 ---
 
 <ul class="nav-list" id="primary-nav">
   {
-    NAV.map((item) => (
+    navItems.map((item) => (
       <li class={`nav-item${item.children ? ' has-children' : ''}`}>
         <a
           href={item.href}

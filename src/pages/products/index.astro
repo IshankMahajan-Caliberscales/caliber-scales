@@ -8,7 +8,10 @@ import Section from '@components/ui/Section.astro';
 import Hero from '@components/blocks/Hero.astro';
 import ProductGrid from '@components/blocks/ProductGrid.astro';
 import IndustryGrid from '@components/blocks/IndustryGrid.astro';
-import { PRODUCT_CATEGORIES } from '@lib/catalog';
+import { getProductCards } from '@lib/products';
+
+// Built live from the CMS so new products appear here automatically.
+const PRODUCTS = await getProductCards();
 ---
 
 <BaseLayout
@@ -23,8 +26,8 @@ import { PRODUCT_CATEGORIES } from '@lib/catalog';
     lede="From heavy-duty truck weighbridges to precision laboratory balances — engineered and manufactured by Caliber Scales."
   />
 
-  <Section title="Browse by category">
-    <ProductGrid items={PRODUCT_CATEGORIES} />
+  <Section title="Our products">
+    <ProductGrid items={PRODUCTS} />
   </Section>
 
   <Section surface title="Find products by industry" intro="Not sure which product fits? Start from your sector.">
