@@ -2,8 +2,12 @@
 # The @astrojs/netlify adapter automatically wires up the serverless functions
 # (for /api/lead, /admin/*, and /keystatic) and the redirects, so this only sets
 # the build command, publish directory, and Node version.
+# build:fast skips the TypeScript type-check (astro check) on deploys — content
+# edits from the CMS can't introduce type errors, and code changes are type-checked
+# locally before pushing. This shortens every build, so each deploy uses fewer
+# Netlify credits. (Content/schema errors are still caught by `astro build`.)
 [build]
-  command = "npm run build"
+  command = "npm run build:fast"
   publish = "dist"
 
 [build.environment]
