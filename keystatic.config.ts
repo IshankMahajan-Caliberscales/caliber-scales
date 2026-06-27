@@ -219,6 +219,12 @@ export default config({
         statesCovered: fields.text({ label: 'States & UTs covered', description: 'e.g. 25+' }),
         certification: fields.text({ label: 'Certification', description: 'e.g. ISO 9001:2015' }),
         compliance: fields.text({ label: 'Compliance line (trust banner)', description: 'e.g. ISO/OIML Compliant Designs' }),
+        aboutImage: fields.image({
+          label: 'About page — photo',
+          description: 'Banner photo shown on the About page.',
+          directory: 'public/images/about',
+          publicPath: '/images/about/',
+        }),
       },
     }),
   },

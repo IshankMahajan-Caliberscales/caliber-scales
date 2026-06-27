@@ -14,5 +14,6 @@
   "clients": "1,000+",
   "statesCovered": "25+",
   "certification": "ISO 9001:2015",
-  "compliance": "ISO/OIML Compliant Designs"
+  "compliance": "ISO/OIML Compliant Designs",
+  "aboutImage": "/images/about/heroImage.jpg"
 }

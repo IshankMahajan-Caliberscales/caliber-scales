@@ -11,6 +11,7 @@ import TrustBar from '@components/blocks/TrustBar.astro';
 import FeatureList from '@components/blocks/FeatureList.astro';
 import ProductGrid from '@components/blocks/ProductGrid.astro';
 import { STATS, CONTACT } from '@lib/site';
+import settings from '../../content/settings/site.json';
 
 const subpages = [
   { title: 'Certifications', href: '/about/certifications/', blurb: 'ISO 9001:2015 and our quality commitments.' },
@@ -29,6 +30,8 @@ const subpages = [
     title="A weighing manufacturer, trusted across India"
     lede={`Established in ${STATS.foundedYear}, Caliber Scales India designs, manufactures, installs, and services industrial weighing equipment — from weighbridges to precision balances.`}
     showCtas={false}
+    image={settings.aboutImage}
+    imageAlt="Caliber Scales — about the company"
   />
 
   <TrustBar />
