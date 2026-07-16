@@ -32,6 +32,22 @@ export const SITE = {
 } as const;
 
 /**
+ * Google tags. Both are loaded from a single gtag.js snippet (see
+ * components/seo/Analytics.astro) — one script, one `config` call per ID.
+ *
+ *   • ga4Id      (G-…)  → Google Analytics 4: traffic, visitors, page views.
+ *   • googleAdsId (AW-…) → Google Ads: conversion tracking + remarketing.
+ *
+ * These IDs are public by design (they ship in the page source). Set either to
+ * an empty string to disable that product. Tags only load in production builds,
+ * so local `npm run dev` traffic never pollutes the stats.
+ */
+export const ANALYTICS: { ga4Id: string; googleAdsId: string } = {
+  ga4Id: 'G-35EW0HP1Q5',
+  googleAdsId: 'AW-16479191381',
+};
+
+/**
  * Contact details — edited via the CMS (Site Settings). The country code stays
  * fixed in code; everything else comes from site.json.
  */

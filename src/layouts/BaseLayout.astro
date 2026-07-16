@@ -10,6 +10,7 @@ import { SITE } from '@lib/site';
 import { organizationSchema, webSiteSchema, type Crumb } from '@lib/schema';
 import SEOHead from '@components/seo/SEOHead.astro';
 import JsonLd from '@components/seo/JsonLd.astro';
+import Analytics from '@components/seo/Analytics.astro';
 import Header from '@components/layout/Header.astro';
 import Footer from '@components/layout/Footer.astro';
 import Breadcrumbs from '@components/layout/Breadcrumbs.astro';
@@ -69,6 +70,9 @@ const path = Astro.url.pathname;
 
     <!-- Sitewide structured data (spec B6). -->
     <JsonLd schema={[organizationSchema(), webSiteSchema()]} />
+
+    <!-- GA4 + Google Ads (production only). -->
+    <Analytics />
 
     <slot name="head" />
   </head>

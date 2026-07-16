@@ -1,0 +1,39 @@
+---
+/**
+ * Google tag (gtag.js) — loads GA4 and Google Ads from a single snippet.
+ *
+ * gtag.js supports any number of destination IDs: the loader script takes the
+ * first ID, then each additional product gets its own `config` call. That means
+ * GA4 (G-…) and Ads (AW-…) share one network request instead of two.
+ *
+ * Only renders in production builds, so `npm run dev` and preview tunnels never
+ * send hits to the real property. IDs come from ANALYTICS in lib/site.ts.
+ */
+import { ANALYTICS } from '@lib/site';
+
+const gtagIds = [ANALYTICS.ga4Id, ANALYTICS.googleAdsId].filter((id) => id !== '');
+
+const enabled = import.meta.env.PROD && gtagIds.length > 0;
+---
+
+{
+  enabled && (
+    <>
+      <script
+        is:inline
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${gtagIds[0]}`}
+      />
+      <script is:inline define:vars={{ gtagIds }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          window.dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtagIds.forEach(function (id) {
+          gtag('config', id);
+        });
+      </script>
+    </>
+  )
+}
