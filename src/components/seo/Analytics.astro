@@ -33,6 +33,22 @@ const enabled = import.meta.env.PROD && gtagIds.length > 0;
         gtagIds.forEach(function (id) {
           gtag('config', id);
         });
+
+        // Spec B10 conversion events: call-click and WhatsApp-click.
+        // One delegated listener on the document catches every tel:/wa.me link
+        // sitewide — including the sticky CTA, WhatsApp float, header and
+        // footer — so individual components need no tracking code, and links
+        // added later are covered automatically.
+        document.addEventListener('click', function (e) {
+          var link = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+          if (!link) return;
+          var href = link.getAttribute('href') || '';
+          if (href.indexOf('tel:') === 0) {
+            gtag('event', 'call_click', { link_url: href });
+          } else if (href.indexOf('wa.me') !== -1) {
+            gtag('event', 'whatsapp_click', { link_url: href });
+          }
+        });
       </script>
     </>
   )

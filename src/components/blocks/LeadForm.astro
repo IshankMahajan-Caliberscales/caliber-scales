@@ -198,8 +198,14 @@ const {
           if (res.ok && data.ok) {
             setStatus(data.message || 'Thank you — we will be in touch shortly.', 'success');
             form.reset();
-            // GA4 conversion hook (wired in Phase 8).
-            if (window.dataLayer && window.dataLayer.push) window.dataLayer.push({ event: 'lead_submit' });
+            // GA4 conversion event (spec B10). `generate_lead` is GA4's
+            // recommended name for this, so Ads recognises it on import.
+            // Fires only on a confirmed 200 — not on a failed send.
+            // gtag() is defined by seo/Analytics.astro in production builds
+            // only, hence the guard.
+            if (typeof window.gtag === 'function') {
+              window.gtag('event', 'generate_lead', { form_location: 'lead_form' });
+            }
           } else if (res.status === 429) {
             setStatus('Too many attempts. Please try again in a minute.', 'error');
           } else {
