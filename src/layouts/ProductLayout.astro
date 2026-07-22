@@ -14,8 +14,6 @@ import SpecTable from '@components/blocks/SpecTable.astro';
 import ComparisonTable from '@components/blocks/ComparisonTable.astro';
 import FAQAccordion from '@components/blocks/FAQAccordion.astro';
 import LeadForm from '@components/blocks/LeadForm.astro';
-import JsonLd from '@components/seo/JsonLd.astro';
-import { productSchema } from '@lib/schema';
 import { productHref } from '@lib/catalog';
 import { COMPARISONS } from '@lib/comparisons';
 
@@ -162,15 +160,15 @@ const noindex = d.draft || d.noindex;
     <LeadForm source={`product:${entry.id}`} heading={`Request a quote — ${d.title}`} />
   </Section>
 
-  <JsonLd
-    schema={productSchema({
-      name: d.title,
-      description: d.metaDescription,
-      image: d.heroImage,
-      category: d.category,
-      url,
-    })}
-  />
+  {/*
+    No Product JSON-LD: these are quote-based products with no published price,
+    review, or rating. Google's product rich result requires one of offers /
+    review / aggregateRating, and fabricating any of them violates its policy —
+    so emitting Product markup only produced a Search Console warning with no
+    benefit. FAQ + breadcrumb structured data (which we do qualify for) are
+    emitted separately by FAQAccordion and BaseLayout. If real pricing is
+    published later, restore productSchema() with a genuine Offer.
+  */}
 </BaseLayout>
 
 <style>
