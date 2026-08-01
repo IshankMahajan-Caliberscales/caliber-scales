@@ -65,7 +65,7 @@ const seoFields = {
     publicPath: '/images/og/',
   }),
   noindex: fields.checkbox({ label: 'Hide from search engines (noindex)', defaultValue: false }),
-  draft: fields.checkbox({ label: 'Draft (excluded from production)', defaultValue: true }),
+  draft: fields.checkbox({ label: 'Draft (excluded from production)', defaultValue: false }),
 };
 
 const heroImage = (dir: string) =>
